@@ -2,9 +2,7 @@ package com.solitaire.game;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 public class CardManager {
@@ -26,7 +24,8 @@ public class CardManager {
                 deck.add(new Card(a, suits[i], frontCards[i * cardHeight][i * cardWidth]));
             }
         }
-        deck = shuffle(cards);
+        // Shuffle function currently produces an empty deck
+        //deck = shuffle(cards);
     }
 
     public ArrayList<Card> shuffle(ArrayList<Card> deck) {
@@ -51,5 +50,8 @@ public class CardManager {
         }
     }
 
+    public ArrayList<Card> GetDeck() {
+        return deck;
+    }
 }
 
