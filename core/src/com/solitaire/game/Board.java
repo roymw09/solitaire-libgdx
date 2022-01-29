@@ -3,10 +3,10 @@ package com.solitaire.game;
 import java.util.ArrayList;
 
 public class Board {
-    ArrayList<ArrayList<Card>> tableau;
-    ArrayList<ArrayList<Card>> foundation;
-    ArrayList<Card> deck;
-    ArrayList<Card> wastePile;
+    private ArrayList<ArrayList<Card>> tableau;
+    private ArrayList<ArrayList<Card>> foundation;
+    private ArrayList<Card> deck;
+    private ArrayList<Card> wastePile;
 
     public Board(ArrayList<Card> deck) {
         this.tableau = new ArrayList<>();
@@ -36,12 +36,15 @@ public class Board {
         initFoundation();
     }
 
-    public void discard(int cardIndex) {
-        wastePile.add(deck.get(cardIndex));
-        deck.remove(cardIndex);
-    }
-
     public ArrayList<ArrayList<Card>> getTableau() {
         return tableau;
+    }
+
+    public ArrayList<ArrayList<Card>> getFoundation() {
+        return foundation;
+    }
+
+    public ArrayList<Card> getWastePile() {
+        return wastePile;
     }
 }

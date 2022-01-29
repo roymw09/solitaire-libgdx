@@ -7,6 +7,7 @@ public class Card {
     String cardValue;
     String suit;
     TextureRegion frontImage;
+    String cardColor;
 
     public Card(int value, String suit, TextureRegion frontImage) {
         this.value = value;
@@ -21,6 +22,12 @@ public class Card {
             cardValue = "King";
         } else {
             cardValue = Integer.toString(value);
+        }
+
+        if (suit.equals("Spades") || suit.equals("Clubs")) {
+            this.cardColor = "black";
+        } else {
+            this.cardColor = "red";
         }
     }
 
@@ -48,4 +55,7 @@ public class Card {
         this.suit = suit;
     }
 
+    public String getCardColor() {
+        return cardColor;
+    }
 }
