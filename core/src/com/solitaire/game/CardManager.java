@@ -58,9 +58,13 @@ public class CardManager {
     }
 
     // pick card from the top of the deck
-    public void pickCard(ArrayList<Card> wastePile) {
-        wastePile.add(deck.get(0));
-        deck.remove(0);
+    public boolean pickCard(ArrayList<Card> wastePile) {
+        if (deck.size() > 0) {
+            wastePile.add(deck.get(0));
+            deck.remove(0);
+            return true;
+        }
+        return false;
     }
 
     public boolean moveToFoundation(ArrayList<ArrayList<Card>> foundation, Card card) {
@@ -104,4 +108,3 @@ public class CardManager {
         return deck;
     }
 }
-
