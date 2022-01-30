@@ -1,28 +1,35 @@
 package com.solitaire.game;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class CardManager {
-    Texture img;
-    TextureRegion[][] frontCards;
-    int cardWidth;
-    int cardHeight;
+    Texture front_img;
+    Texture back_img;
     ArrayList<Card> deck = new ArrayList<Card>();
-
     ArrayList<ArrayList<Card>> tableCards = new ArrayList<ArrayList<Card>>();
+    Sprite frontCards;
+    Sprite backCards;
 
     public void MakeCards() {
-        img = new Texture("cards_front.png");
-        frontCards = TextureRegion.split(img, 40, 40);
-        String[] suits = { "Spades", "Hearts", "Diamonds", "Clubs" };
-        ArrayList<Card> cards = new ArrayList<Card>();
+        front_img = new Texture("cards_front.png");
+        back_img = new Texture("card_back.png");
+        int x = 0;
+        int y = 0;
+        int width = 43;
+        int height = 63;
+        String[] suits = { "Spades", "Clubs", "Hearts", "Diamonds" };
         for (int i = 0; i < suits.length; i++) {
             for (int a = 0; a < 13; a++) {
-                deck.add(new Card(a, suits[i], frontCards[i * cardHeight][i * cardWidth]));
+                frontCards = new Sprite(front_img, x, y, width, height);
+                backCards = new Sprite(back_img);
+                deck.add(new Card(a, suits[i], frontCards, backCards));
+                x += 43;
             }
+            y += 62;
+            x = 0;
         }
         // Shuffle function currently produces an empty deck
         //deck = shuffle(cards);

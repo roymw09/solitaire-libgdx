@@ -32,7 +32,7 @@ public class SolitaireGame extends ApplicationAdapter {
 
 	@Override
 	public void render () {
-		ScreenUtils.clear(1, 0, 0, 1);
+		ScreenUtils.clear(34, 139, 34, 1);
 		batch.begin();
 		//batch.draw(topFrames[0][0], 0, 0);
 		// this is meant to represent the stock pile (deck)
@@ -53,11 +53,10 @@ public class SolitaireGame extends ApplicationAdapter {
 		int counterY = 300;
 		for (int i = 0; i < tableau.size(); i++) {
 			for (int j = 0; j < i+1; j++) {
-				if (j == i ) {
-					batch.draw(tableau.get(i).get(j).frontImage, counterX, counterY);
-				} else {
-					batch.draw(card_back, counterX, counterY, 40, 40);
-				}
+				// draw each card in the tableau
+				Card card = tableau.get(i).get(j);
+				card.setFaceUp(j == i);
+				card.draw(batch, counterX, counterY);
 				counterY -= 20;
 			}
 			counterX += 43;
