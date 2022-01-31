@@ -2,6 +2,7 @@ package com.solitaire.game;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class Card {
     private int value;
@@ -81,5 +82,21 @@ public class Card {
 
     public boolean getFaceUp() {
         return faceUp;
+    }
+
+    public Sprite getFrontImage(){
+        return this.frontImage;
+    }
+
+    public void setFrontImage(Sprite frontImage){
+        this.frontImage = frontImage;
+    }
+
+    public Sprite getBackImage(){
+        return this.backImage;
+    }
+
+    public void setBackImage(Sprite backImage){
+        this.backImage = backImage;
     }
 }

@@ -12,6 +12,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 public class SolitaireGame extends ApplicationAdapter {
 	private OrthographicCamera camera;
@@ -24,6 +26,11 @@ public class SolitaireGame extends ApplicationAdapter {
 	Board board;
 	ArrayList<ArrayList<Card>> tableau;
 	Sprite card_back;
+	int[] tableauDefaultPosition = {240, 115, 43, -20};
+	ArrayList<int[]> clickedCards = new ArrayList<int[]>();
+	boolean initial = false;
+	
+
 
 	@Override
 	public void create () {
@@ -67,11 +74,52 @@ public class SolitaireGame extends ApplicationAdapter {
 		if (buttonWasClicked) {
 			int spriteLocationX = 498;
 			int spriteLocationY = 15;
-			Vector3 touchPoint = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-			Rectangle2D bounds = new Rectangle2D.Float(spriteLocationX, spriteLocationY, 40, 63);
-			if (bounds.contains(touchPoint.x, touchPoint.y)) {
-				cardManger.pickCard(wastePile);
+			int[] currentPosition = {tableauDefaultPosition[0], tableauDefaultPosition[1]};
+
+			//Changed it to unproject to get accurate hit boxes on the cards
+			//Vector3 touchPoint = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+			Vector3 touchPoint = new Vector3();
+			camera.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+			//Loop through the coordinates to find the column then the row
+			int column = -1;
+			for (int i = 0; i < 7; i++) {
+				if (touchPoint.x > (currentPosition[0] + (tableauDefaultPosition[2] * i)) && touchPoint.x < (currentPosition[0] + 40 + (tableauDefaultPosition[2] * i))) {
+					column = i;
+					break;
+				}
 			}
+			if (column != -1){
+				for (int i = tableau.get(column).size() - 1; i >= 0; i-= 1){
+					if(tableau.get(column).get(i).getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
+						System.out.println(tableau.get(column).get(i));
+						clickedCards.add(new int[]{column, i});
+						UpdateCards();
+						break;
+					}
+				}
+			}
+
+			//Deck to waste not working, the hit box is really low and then switches to 0, 0 part way through the deck for some reason.
+			//Rectangle2D bounds = new Rectangle2D.Float(spriteLocationX, spriteLocationY, 40, 63);
+			Rectangle2D bounds = new Rectangle2D.Float(deck.get(0).getBackImage().getX(), deck.get(0).getBackImage().getY(), 40, 63);
+			System.out.println(bounds);
+			System.out.println(touchPoint.x + ", " + touchPoint.y);
+			if (deck.get(0).getBackImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
+				cardManger.pickCard(wastePile);
+				System.out.println("Suc");
+			}
+		}
+	}
+
+	public void UpdateCards(){
+		if (clickedCards.size() >= 2){
+			if (clickedCards.get(0) != clickedCards.get(1)){
+				clickedCards.get(0);
+				tableau.get(clickedCards.get(1)[0]).add(tableau.get(clickedCards.get(0)[0]).get(clickedCards.get(0)[1]));
+				tableau.get(clickedCards.get(0)[0]).remove(clickedCards.get(0)[1]);
+			}
+			System.out.println(clickedCards);
+			clickedCards.clear();
 		}
 	}
 	
@@ -85,15 +133,22 @@ public class SolitaireGame extends ApplicationAdapter {
 		int counterX = 240;
 		int counterY = 300;
 		for (int i = 0; i < tableau.size(); i++) {
-			for (int j = 0; j < i+1; j++) {
+			int secondSize;
+			if (initial == true) {
+				secondSize = tableau.get(i).size();
+			} else {
+				secondSize = i+1;
+			}
+			for (int j = 0; j < secondSize; j++) {
 				// draw each card in the tableau
 				Card card = tableau.get(i).get(j);
 				card.setFaceUp(j == i); // set the last card of each pile face up and draw the card's front image
-				card.draw(batch, counterX, counterY);
+	 			card.draw(batch, counterX, counterY);
 				counterY -= 20;
 			}
 			counterX += 43;
 			counterY = 300;
+			initial = true;
 		}
 	}
 
