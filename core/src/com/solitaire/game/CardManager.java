@@ -7,26 +7,29 @@ import java.util.Random;
 
 public class CardManager {
     Texture front_img;
-    Texture back_img;
+    Texture back_img = new Texture("card_back.png");
     ArrayList<Card> deck = new ArrayList<Card>();
     ArrayList<ArrayList<Card>> tableCards = new ArrayList<ArrayList<Card>>();
     Sprite frontCards;
-    Sprite backCards;
+    Sprite backCards = new Sprite(back_img);
 
     public void MakeCards() {
         front_img = new Texture("cards_front.png");
-        back_img = new Texture("card_back.png");
         int x = 0;
         int y = 0;
         int width = 43;
         int height = 63;
         String[] suits = { "Spades", "Clubs", "Hearts", "Diamonds" };
         for (int i = 0; i < suits.length; i++) {
-            for (int a = 0; a < 13; a++) {
-                frontCards = new Sprite(front_img, x, y, width, height);
-                backCards = new Sprite(back_img);
+            for (int a = 1; a <= 13; a++) {
+                if (a == 1) {
+                    frontCards = new Sprite(front_img, 515, y, width, height);
+                }
+                else {
+                    frontCards = new Sprite(front_img, x, y, width, height);
+                    x += 43;
+                }
                 deck.add(new Card(a, suits[i], frontCards, backCards));
-                x += 43;
             }
             y += 62;
             x = 0;

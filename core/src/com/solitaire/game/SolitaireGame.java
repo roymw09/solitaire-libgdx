@@ -73,7 +73,7 @@ public class SolitaireGame extends ApplicationAdapter {
 		boolean buttonWasClicked = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
 		if (buttonWasClicked) {
 			int spriteLocationX = 498;
-			int spriteLocationY = 15;
+			int spriteLocationY = 400;
 			int[] currentPosition = {tableauDefaultPosition[0], tableauDefaultPosition[1]};
 
 			//Changed it to unproject to get accurate hit boxes on the cards
@@ -101,10 +101,10 @@ public class SolitaireGame extends ApplicationAdapter {
 
 			//Deck to waste not working, the hit box is really low and then switches to 0, 0 part way through the deck for some reason.
 			//Rectangle2D bounds = new Rectangle2D.Float(spriteLocationX, spriteLocationY, 40, 63);
-			Rectangle2D bounds = new Rectangle2D.Float(deck.get(0).getBackImage().getX(), deck.get(0).getBackImage().getY(), 40, 63);
+			Rectangle2D bounds = new Rectangle2D.Float(spriteLocationX, spriteLocationY, 40, 63);
 			System.out.println(bounds);
 			System.out.println(touchPoint.x + ", " + touchPoint.y);
-			if (deck.get(0).getBackImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
+			if (bounds.contains(touchPoint.x, touchPoint.y)) {
 				cardManger.pickCard(wastePile);
 				System.out.println("Suc");
 			}
