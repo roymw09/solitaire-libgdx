@@ -29,6 +29,7 @@ public class SolitaireGame extends ApplicationAdapter {
 	int[] tableauDefaultPosition = {240, 115, 43, -20};
 	ArrayList<int[]> clickedCards = new ArrayList<int[]>();
 	boolean initial = false;
+	boolean init = false;
 	
 
 
@@ -64,11 +65,19 @@ public class SolitaireGame extends ApplicationAdapter {
 		if (!deck.isEmpty()) {
 			card_back.draw(batch);
 		}
+
 		// draw tableau
-		drawTableau();
+		if (init) {
+			drawTableau();
+		} else {
+			init = true;
+			drawInitTableau();
+		}
+
 		// draw wastePile
 		drawWastePile();
 		batch.end();
+
 		// move card to wastePile when the deck is clicked
 		boolean buttonWasClicked = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
 		if (buttonWasClicked) {
@@ -92,6 +101,7 @@ public class SolitaireGame extends ApplicationAdapter {
 				for (int i = tableau.get(column).size() - 1; i >= 0; i-= 1){
 					if(tableau.get(column).get(i).getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
 						System.out.println(tableau.get(column).get(i));
+						Card card = tableau.get(column).get(i);
 						clickedCards.add(new int[]{column, i});
 						UpdateCards();
 						break;
@@ -129,12 +139,12 @@ public class SolitaireGame extends ApplicationAdapter {
 		img.dispose();
 	}
 
-	private void drawTableau() {
+	private void drawInitTableau() {
 		int counterX = 240;
 		int counterY = 300;
 		for (int i = 0; i < tableau.size(); i++) {
 			int secondSize;
-			if (initial == true) {
+			if (initial) {
 				secondSize = tableau.get(i).size();
 			} else {
 				secondSize = i+1;
@@ -149,6 +159,19 @@ public class SolitaireGame extends ApplicationAdapter {
 			counterX += 43;
 			counterY = 300;
 			initial = true;
+		}
+	}
+
+	private void drawTableau() {
+		int counterX = 240;
+		int counterY = 300;
+		for (ArrayList<Card> cards : tableau) {
+			for (Card card : cards) {
+				card.draw(batch, counterX, counterY);
+				counterY -= 20;
+			}
+			counterX += 43;
+			counterY = 300;
 		}
 	}
 

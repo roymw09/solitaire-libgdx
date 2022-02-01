@@ -93,20 +93,6 @@ public class CardManager {
         return false;
     }
 
-    public boolean moveToTableau(ArrayList<ArrayList<Card>> tableau, Card card) {
-        for (int i = 0; i < tableau.size(); i++) {
-            int tableauValue = tableau.get(i).get(0).getValue();
-            int cardValue = card.getValue();
-            String tableauCardColor = tableau.get(i).get(0).getCardColor();
-            String cardColor = card.getCardColor();
-            if (tableauValue == cardValue+1 && !tableauCardColor.equals(cardColor)) {
-                tableau.get(i).add(card);
-                return true;
-            }
-        }
-        return false;
-    }
-
     public ArrayList<Card> GetDeck() {
         return deck;
     }
