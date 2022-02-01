@@ -12,15 +12,12 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 
 public class SolitaireGame extends ApplicationAdapter {
 	private OrthographicCamera camera;
 	SpriteBatch batch;
 	Texture img;
 	TextureRegion[][] topFrames;
-	CardManager cardManger;
 	ArrayList<Card> deck;
 	ArrayList<Card> wastePile;
 	Board board;
@@ -29,26 +26,22 @@ public class SolitaireGame extends ApplicationAdapter {
 	int[] tableauDefaultPosition = {240, 115, 43, -20};
 	ArrayList<int[]> clickedCards = new ArrayList<int[]>();
 	boolean initial = false;
-	boolean init = false;
+	boolean tableauIsInitialized = false;
 	
 
 
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		cardManger = new CardManager();
-		cardManger.MakeCards();
-		deck = cardManger.GetDeck();
-		board = new Board(deck);
+		board = new Board();
 		board.initBoard();
-		wastePile = board.getWastePile();
+		deck = board.getDeck();
 		tableau = board.getTableau();
-		// TODO - Refactor
+		wastePile = board.getWastePile();
 		Texture cardBackImage = new Texture("card_back.png");
 		card_back = new Sprite(cardBackImage);
 		card_back.setSize(40, 63);
 		card_back.setPosition(498, 400);
-
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 800, 480);
 	}
@@ -67,18 +60,17 @@ public class SolitaireGame extends ApplicationAdapter {
 		}
 
 		// draw tableau
-		if (init) {
+		if (tableauIsInitialized) {
 			drawTableau();
 		} else {
-			init = true;
 			drawInitTableau();
+			tableauIsInitialized = true;
 		}
 
 		// draw wastePile
 		drawWastePile();
 		batch.end();
 
-		// move card to wastePile when the deck is clicked
 		boolean buttonWasClicked = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
 		if (buttonWasClicked) {
 			int spriteLocationX = 498;
@@ -86,9 +78,10 @@ public class SolitaireGame extends ApplicationAdapter {
 			int[] currentPosition = {tableauDefaultPosition[0], tableauDefaultPosition[1]};
 
 			//Changed it to unproject to get accurate hit boxes on the cards
-			//Vector3 touchPoint = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
 			Vector3 touchPoint = new Vector3();
-			camera.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+			touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+			camera.unproject(touchPoint);
+
 			//Loop through the coordinates to find the column then the row
 			int column = -1;
 			for (int i = 0; i < 7; i++) {
@@ -109,14 +102,12 @@ public class SolitaireGame extends ApplicationAdapter {
 				}
 			}
 
-			//Deck to waste not working, the hit box is really low and then switches to 0, 0 part way through the deck for some reason.
-			//Rectangle2D bounds = new Rectangle2D.Float(spriteLocationX, spriteLocationY, 40, 63);
+			// move card to wastePile when the deck is clicked
 			Rectangle2D bounds = new Rectangle2D.Float(spriteLocationX, spriteLocationY, 40, 63);
 			System.out.println(bounds);
 			System.out.println(touchPoint.x + ", " + touchPoint.y);
 			if (bounds.contains(touchPoint.x, touchPoint.y)) {
-				cardManger.pickCard(wastePile);
-				System.out.println("Suc");
+				board.pickCard(wastePile, deck);
 			}
 		}
 	}
@@ -124,11 +115,9 @@ public class SolitaireGame extends ApplicationAdapter {
 	public void UpdateCards(){
 		if (clickedCards.size() >= 2){
 			if (clickedCards.get(0) != clickedCards.get(1)){
-				clickedCards.get(0);
 				tableau.get(clickedCards.get(1)[0]).add(tableau.get(clickedCards.get(0)[0]).get(clickedCards.get(0)[1]));
 				tableau.get(clickedCards.get(0)[0]).remove(clickedCards.get(0)[1]);
 			}
-			System.out.println(clickedCards);
 			clickedCards.clear();
 		}
 	}
@@ -181,7 +170,6 @@ public class SolitaireGame extends ApplicationAdapter {
 		if (!wastePile.isEmpty()) {
 			for (int i = wastePile.size()-1; i >= wastePile.size()-3 && i >= 0; i--) {
 				Card card = wastePile.get(i);
-				card.setFaceUp(true);
 				card.draw(batch, x, y);
 				x -= 43;
 			}

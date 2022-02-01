@@ -2,13 +2,12 @@ package com.solitaire.game;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class Card {
     private int value;
     private String cardValue;
     private String suit;
-    private String cardColor;
+    private final String cardColor;
     private boolean faceUp;
     private Sprite frontImage;
     private Sprite backImage;

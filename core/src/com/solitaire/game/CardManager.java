@@ -3,17 +3,16 @@ package com.solitaire.game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class CardManager {
     Texture front_img;
     Texture back_img = new Texture("card_back.png");
-    ArrayList<Card> deck = new ArrayList<Card>();
     ArrayList<ArrayList<Card>> tableCards = new ArrayList<ArrayList<Card>>();
     Sprite frontCards;
     Sprite backCards = new Sprite(back_img);
 
-    public void MakeCards() {
+    public ArrayList<Card> MakeCards() {
+        ArrayList<Card> deck = new ArrayList<Card>();
         front_img = new Texture("cards_front.png");
         int x = 0;
         int y = 0;
@@ -36,35 +35,16 @@ public class CardManager {
         }
         // Shuffle function currently produces an empty deck
         //deck = shuffle(cards);
+        return deck;
     }
 
-    public ArrayList<Card> shuffle(ArrayList<Card> deck) {
-
-        ArrayList<Card> copy = new ArrayList<Card>();
-        Random rand = new Random();
-        while (deck.size() > 0) {
-            int randomInt = rand.nextInt(deck.size());
-            copy.add(deck.get(randomInt));
-            deck.remove(randomInt);
-        }
-        return copy;
-    }
-
-    public void DealCards(){
-        for (int i = 0; i < 7; i++){
-            tableCards.add(new ArrayList<Card>());
-            for(int a = 0; a < (i+1); a++){
-                tableCards.get(i).add(deck.get(i*13 + a));
-                deck.remove(i*13+a);
-            }
-        }
-    }
-
-    // pick card from the top of the deck
-    public boolean pickCard(ArrayList<Card> wastePile) {
+    // pick the first card from the deck
+    public boolean pickCard(ArrayList<Card> wastePile, ArrayList<Card> deck) {
         if (deck.size() > 0) {
-            wastePile.add(deck.get(0));
-            deck.remove(0);
+            Card card = deck.get(0);
+            card.setFaceUp(true);
+            deck.remove(card);
+            wastePile.add(card);
             return true;
         }
         return false;
@@ -91,9 +71,5 @@ public class CardManager {
         }
 
         return false;
-    }
-
-    public ArrayList<Card> GetDeck() {
-        return deck;
     }
 }
