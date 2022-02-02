@@ -3,6 +3,7 @@ package com.solitaire.game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class CardManager {
     Texture front_img;
@@ -10,9 +11,9 @@ public class CardManager {
     ArrayList<ArrayList<Card>> tableCards = new ArrayList<ArrayList<Card>>();
     Sprite frontCards;
     Sprite backCards = new Sprite(back_img);
+    ArrayList<Card> deck = new ArrayList<Card>();
 
     public ArrayList<Card> MakeCards() {
-        ArrayList<Card> deck = new ArrayList<Card>();
         front_img = new Texture("cards_front.png");
         int x = 0;
         int y = 0;
@@ -33,8 +34,7 @@ public class CardManager {
             y += 62;
             x = 0;
         }
-        // Shuffle function currently produces an empty deck
-        //deck = shuffle(cards);
+        Collections.shuffle(deck);
         return deck;
     }
 

@@ -17,7 +17,6 @@ public class SolitaireGame extends ApplicationAdapter {
 	private OrthographicCamera camera;
 	SpriteBatch batch;
 	Texture img;
-	TextureRegion[][] topFrames;
 	ArrayList<Card> deck;
 	ArrayList<Card> wastePile;
 	Board board;
@@ -54,7 +53,6 @@ public class SolitaireGame extends ApplicationAdapter {
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
-		//batch.draw(topFrames[0][0], 0, 0);
 
 		// draw the deck if it still contains cards
 		if (!deck.isEmpty()) {
@@ -99,9 +97,8 @@ public class SolitaireGame extends ApplicationAdapter {
 				for (int i = tableau.get(column).size() - 1; i >= 0; i-= 1){
 					Card card = tableau.get(column).get(i);
 					if(card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
-						// add aces to the foundation
-						if (card.getValue() == 1) {
-							board.moveToFoundation(foundation, card);
+						// places card in the foundation
+						if (board.moveToFoundation(foundation, card)) {
 							tableau.get(column).remove(card);
 						} else {
 							System.out.println(tableau.get(column).get(i));
