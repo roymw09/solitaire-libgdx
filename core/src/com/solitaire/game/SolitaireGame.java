@@ -22,6 +22,7 @@ public class SolitaireGame extends ApplicationAdapter {
 	ArrayList<Card> wastePile;
 	Board board;
 	ArrayList<ArrayList<Card>> tableau;
+	ArrayList<ArrayList<Card>> foundation;
 	Sprite card_back;
 	int[] tableauDefaultPosition = {240, 115, 43, -20};
 	ArrayList<int[]> clickedCards = new ArrayList<int[]>();
@@ -37,6 +38,7 @@ public class SolitaireGame extends ApplicationAdapter {
 		board.initBoard();
 		deck = board.getDeck();
 		tableau = board.getTableau();
+		foundation = board.getFoundation();
 		wastePile = board.getWastePile();
 		Texture cardBackImage = new Texture("card_back.png");
 		card_back = new Sprite(cardBackImage);
@@ -69,6 +71,9 @@ public class SolitaireGame extends ApplicationAdapter {
 
 		// draw wastePile
 		drawWastePile();
+
+		// draw foundation
+		drawFoundation();
 		batch.end();
 
 		boolean buttonWasClicked = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
@@ -92,11 +97,16 @@ public class SolitaireGame extends ApplicationAdapter {
 			}
 			if (column != -1){
 				for (int i = tableau.get(column).size() - 1; i >= 0; i-= 1){
-					if(tableau.get(column).get(i).getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
-						System.out.println(tableau.get(column).get(i));
-						Card card = tableau.get(column).get(i);
-						clickedCards.add(new int[]{column, i});
-						UpdateCards();
+					Card card = tableau.get(column).get(i);
+					if(card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
+						if (card.getValue() == 1) {
+							board.moveToFoundation(foundation, card);
+							tableau.get(column).remove(card);
+						} else {
+							System.out.println(tableau.get(column).get(i));
+							clickedCards.add(new int[]{column, i});
+							UpdateCards();
+						}
 						break;
 					}
 				}
@@ -173,6 +183,20 @@ public class SolitaireGame extends ApplicationAdapter {
 				card.draw(batch, x, y);
 				x -= 43;
 			}
+		}
+	}
+
+	private void drawFoundation() {
+		int x = 200;
+		int y = 400;
+
+		// draw the last card in the foundation
+		for (ArrayList<Card> cards : foundation) {
+			if (!cards.isEmpty()) {
+				Card card = cards.get(cards.size()-1);
+				card.draw(batch, x, y);
+			}
+			x += 43;
 		}
 	}
 }
