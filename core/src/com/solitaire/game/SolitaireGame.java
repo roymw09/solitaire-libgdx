@@ -99,6 +99,7 @@ public class SolitaireGame extends ApplicationAdapter {
 				for (int i = tableau.get(column).size() - 1; i >= 0; i-= 1){
 					Card card = tableau.get(column).get(i);
 					if(card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
+						// add aces to the foundation
 						if (card.getValue() == 1) {
 							board.moveToFoundation(foundation, card);
 							tableau.get(column).remove(card);
@@ -118,6 +119,18 @@ public class SolitaireGame extends ApplicationAdapter {
 			System.out.println(touchPoint.x + ", " + touchPoint.y);
 			if (bounds.contains(touchPoint.x, touchPoint.y)) {
 				board.pickCard(wastePile, deck);
+			}
+
+			// move aces from waste pile to foundation
+			if (!wastePile.isEmpty()) {
+				for (int i = wastePile.size()-1; i >= wastePile.size()-3 && i >= 0; i--) {
+					Card card = wastePile.get(i);
+					boolean isAce = card.getValue() == 1;
+					if (card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y) && isAce) {
+						board.moveToFoundation(foundation, card);
+						wastePile.remove(card);
+					}
+				}
 			}
 		}
 	}
@@ -187,7 +200,7 @@ public class SolitaireGame extends ApplicationAdapter {
 	}
 
 	private void drawFoundation() {
-		int x = 200;
+		int x = 100;
 		int y = 400;
 
 		// draw the last card in the foundation
