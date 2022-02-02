@@ -64,7 +64,7 @@ public class CardManager {
                 }
             }
             // if the card is an ace, add it to the empty foundation pile
-            if (card.getValue() == 1) {
+            else if (card.getValue() == 1) {
                 foundation.get(i).add(card);
                 return true;
             }
