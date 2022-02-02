@@ -114,10 +114,11 @@ public class SolitaireGame extends ApplicationAdapter {
 
 	public void UpdateCards(){
 		if (clickedCards.size() >= 2){
-			if (clickedCards.get(0) != clickedCards.get(1)){
-				tableau.get(clickedCards.get(1)[0]).add(tableau.get(clickedCards.get(0)[0]).get(clickedCards.get(0)[1]));
-				tableau.get(clickedCards.get(0)[0]).remove(clickedCards.get(0)[1]);
+			if (tableau.get(clickedCards.get(1)[0]).get(clickedCards.get(1)[0]).getValue() - 1 == tableau.get(clickedCards.get(0)[0]).get(clickedCards.get(0)[0]).getValue() && tableau.get(clickedCards.get(1)[0]).get(clickedCards.get(1)[0]).getSuit() != tableau.get(clickedCards.get(0)[0]).get(clickedCards.get(0)[0]).getSuit()){
+					tableau.get(clickedCards.get(1)[0]).add(tableau.get(clickedCards.get(0)[0]).get(clickedCards.get(0)[1]));
+					tableau.get(clickedCards.get(0)[0]).remove(clickedCards.get(0)[1]);
 			}
+
 			clickedCards.clear();
 		}
 	}
