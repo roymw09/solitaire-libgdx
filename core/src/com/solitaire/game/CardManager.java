@@ -52,11 +52,11 @@ public class CardManager {
 
     public boolean moveToFoundation(ArrayList<ArrayList<Card>> foundation, Card card) {
         for (int i = 0; i < 4; i++) {
-            // get the last card in the current foundation pile
-            int lastCard = foundation.get(i).get(foundation.get(i).size()-1).getValue();
-            // get the first card in the current foundation pile so we can compare its suit to the card being moved
-            boolean suitMatches = card.getSuit().equals(foundation.get(i).get(0).getSuit());
             if (!foundation.get(i).isEmpty()) {
+                // get the last card in the current foundation pile
+                int lastCard = foundation.get(i).get(foundation.get(i).size()-1).getValue();
+                // get the first card in the current foundation pile so we can compare its suit to the card being moved
+                boolean suitMatches = card.getSuit().equals(foundation.get(i).get(0).getSuit());
                 // make sure the suits match and the card being moved to the foundation is in the correct order
                 if (suitMatches && card.getValue() == lastCard+1) {
                     foundation.get(i).add(card);
@@ -64,7 +64,7 @@ public class CardManager {
                 }
             }
             // if the card is an ace, add it to the empty foundation pile
-            if (card.getValue() == 1) {
+            else if (card.getValue() == 1) {
                 foundation.get(i).add(card);
                 return true;
             }
