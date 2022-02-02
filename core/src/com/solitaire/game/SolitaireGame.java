@@ -24,10 +24,9 @@ public class SolitaireGame extends ApplicationAdapter {
 	ArrayList<ArrayList<Card>> foundation;
 	Sprite card_back;
 	int[] tableauDefaultPosition = {240, 115, 43, -20};
-	ArrayList<int[]> clickedCards = new ArrayList<int[]>();
 	boolean initial = false;
 	boolean tableauIsInitialized = false;
-	
+
 
 
 	@Override
@@ -97,13 +96,14 @@ public class SolitaireGame extends ApplicationAdapter {
 				for (int i = tableau.get(column).size() - 1; i >= 0; i-= 1){
 					Card card = tableau.get(column).get(i);
 					if(card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
-						// places card in the foundation
+						// places card in the
+						System.out.println("Here");
 						if (board.moveToFoundation(foundation, card)) {
 							tableau.get(column).remove(card);
-						} else {
-							System.out.println(tableau.get(column).get(i));
-							clickedCards.add(new int[]{column, i});
-							UpdateCards();
+							tableau.get(column).get(i-1).setFaceUp(true);
+						} else if (board.moveToTableau(tableau, card)) {
+							tableau.get(column).remove(card);
+							tableau.get(column).get(i-1).setFaceUp(true);
 						}
 						break;
 					}
@@ -118,12 +118,14 @@ public class SolitaireGame extends ApplicationAdapter {
 				board.pickCard(wastePile, deck);
 			}
 
-			// move cards from waste pile to foundation
+			// move cards from waste pile to foundation or tableau
 			if (!wastePile.isEmpty()) {
 				for (int i = wastePile.size()-1; i >= wastePile.size()-3 && i >= 0; i--) {
 					Card card = wastePile.get(i);
 					if (card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
 						if (board.moveToFoundation(foundation, card)) {
+							wastePile.remove(card);
+						} else if (board.moveToTableau(tableau, card)) {
 							wastePile.remove(card);
 						}
 					}
@@ -132,17 +134,6 @@ public class SolitaireGame extends ApplicationAdapter {
 		}
 	}
 
-	public void UpdateCards(){
-		if (clickedCards.size() >= 2){
-			if (tableau.get(clickedCards.get(1)[0]).get(clickedCards.get(1)[0]).getValue() - 1 == tableau.get(clickedCards.get(0)[0]).get(clickedCards.get(0)[0]).getValue() && tableau.get(clickedCards.get(1)[0]).get(clickedCards.get(1)[0]).getSuit() != tableau.get(clickedCards.get(0)[0]).get(clickedCards.get(0)[0]).getSuit()){
-					tableau.get(clickedCards.get(1)[0]).add(tableau.get(clickedCards.get(0)[0]).get(clickedCards.get(0)[1]));
-					tableau.get(clickedCards.get(0)[0]).remove(clickedCards.get(0)[1]);
-			}
-
-			clickedCards.clear();
-		}
-	}
-	
 	@Override
 	public void dispose () {
 		batch.dispose();
@@ -163,7 +154,7 @@ public class SolitaireGame extends ApplicationAdapter {
 				// draw each card in the tableau
 				Card card = tableau.get(i).get(j);
 				card.setFaceUp(j == i); // set the last card of each pile face up and draw the card's front image
-	 			card.draw(batch, counterX, counterY);
+				card.draw(batch, counterX, counterY);
 				counterY -= 20;
 			}
 			counterX += 43;

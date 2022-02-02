@@ -40,7 +40,12 @@ public class Board {
     }
 
     public boolean moveToFoundation(ArrayList<ArrayList<Card>> foundation, Card card) {
+        System.out.println("E");
         return cardManager.moveToFoundation(foundation, card);
+    }
+
+    public boolean moveToTableau(ArrayList<ArrayList<Card>> tableau, Card card) {
+        return cardManager.moveToTableau(tableau, card);
     }
 
     public void initBoard() {

@@ -31,8 +31,10 @@ public class Card {
 
         if (suit.equals("Spades") || suit.equals("Clubs")) {
             this.cardColor = "black";
-        } else {
+        } else if (suit.equals("Hearts") || suit.equals("Diamonds")) {
             this.cardColor = "red";
+        } else {
+            this.cardColor = null;
         }
     }
 
