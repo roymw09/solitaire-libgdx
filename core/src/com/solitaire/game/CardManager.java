@@ -8,10 +8,10 @@ import java.util.Collections;
 public class CardManager {
     Texture front_img;
     Texture back_img = new Texture("card_back.png");
-    ArrayList<ArrayList<Card>> tableCards = new ArrayList<ArrayList<Card>>();
+    ArrayList<ArrayList<Card>> tableCards = new ArrayList<>();
     Sprite frontCards;
     Sprite backCards = new Sprite(back_img);
-    ArrayList<Card> deck = new ArrayList<Card>();
+    ArrayList<Card> deck = new ArrayList<>();
 
     public ArrayList<Card> MakeCards() {
         front_img = new Texture("cards_front.png");
@@ -46,6 +46,9 @@ public class CardManager {
             deck.remove(card);
             wastePile.add(card);
             return true;
+        } else {
+            deck.addAll(wastePile);
+            wastePile.clear();
         }
         return false;
     }
