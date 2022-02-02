@@ -121,14 +121,14 @@ public class SolitaireGame extends ApplicationAdapter {
 				board.pickCard(wastePile, deck);
 			}
 
-			// move aces from waste pile to foundation
+			// move cards from waste pile to foundation
 			if (!wastePile.isEmpty()) {
 				for (int i = wastePile.size()-1; i >= wastePile.size()-3 && i >= 0; i--) {
 					Card card = wastePile.get(i);
-					boolean isAce = card.getValue() == 1;
-					if (card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y) && isAce) {
-						board.moveToFoundation(foundation, card);
-						wastePile.remove(card);
+					if (card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
+						if (board.moveToFoundation(foundation, card)) {
+							wastePile.remove(card);
+						}
 					}
 				}
 			}
