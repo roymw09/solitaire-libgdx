@@ -39,6 +39,10 @@ public class Board {
         cardManager.pickCard(wastePile, deck);
     }
 
+    public boolean moveToFoundation(ArrayList<ArrayList<Card>> foundation, Card card) {
+        return cardManager.moveToFoundation(foundation, card);
+    }
+
     public void initBoard() {
         initTableau();
         initFoundation();

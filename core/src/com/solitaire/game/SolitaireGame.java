@@ -17,11 +17,11 @@ public class SolitaireGame extends ApplicationAdapter {
 	private OrthographicCamera camera;
 	SpriteBatch batch;
 	Texture img;
-	TextureRegion[][] topFrames;
 	ArrayList<Card> deck;
 	ArrayList<Card> wastePile;
 	Board board;
 	ArrayList<ArrayList<Card>> tableau;
+	ArrayList<ArrayList<Card>> foundation;
 	Sprite card_back;
 	int[] tableauDefaultPosition = {240, 115, 43, -20};
 	ArrayList<int[]> clickedCards = new ArrayList<int[]>();
@@ -37,6 +37,7 @@ public class SolitaireGame extends ApplicationAdapter {
 		board.initBoard();
 		deck = board.getDeck();
 		tableau = board.getTableau();
+		foundation = board.getFoundation();
 		wastePile = board.getWastePile();
 		Texture cardBackImage = new Texture("card_back.png");
 		card_back = new Sprite(cardBackImage);
@@ -52,7 +53,6 @@ public class SolitaireGame extends ApplicationAdapter {
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
-		//batch.draw(topFrames[0][0], 0, 0);
 
 		// draw the deck if it still contains cards
 		if (!deck.isEmpty()) {
@@ -69,6 +69,9 @@ public class SolitaireGame extends ApplicationAdapter {
 
 		// draw wastePile
 		drawWastePile();
+
+		// draw foundation
+		drawFoundation();
 		batch.end();
 
 		boolean buttonWasClicked = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
@@ -92,11 +95,16 @@ public class SolitaireGame extends ApplicationAdapter {
 			}
 			if (column != -1){
 				for (int i = tableau.get(column).size() - 1; i >= 0; i-= 1){
-					if(tableau.get(column).get(i).getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
-						System.out.println(tableau.get(column).get(i));
-						Card card = tableau.get(column).get(i);
-						clickedCards.add(new int[]{column, i});
-						UpdateCards();
+					Card card = tableau.get(column).get(i);
+					if(card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
+						// places card in the foundation
+						if (board.moveToFoundation(foundation, card)) {
+							tableau.get(column).remove(card);
+						} else {
+							System.out.println(tableau.get(column).get(i));
+							clickedCards.add(new int[]{column, i});
+							UpdateCards();
+						}
 						break;
 					}
 				}
@@ -108,6 +116,18 @@ public class SolitaireGame extends ApplicationAdapter {
 			System.out.println(touchPoint.x + ", " + touchPoint.y);
 			if (bounds.contains(touchPoint.x, touchPoint.y)) {
 				board.pickCard(wastePile, deck);
+			}
+
+			// move cards from waste pile to foundation
+			if (!wastePile.isEmpty()) {
+				for (int i = wastePile.size()-1; i >= wastePile.size()-3 && i >= 0; i--) {
+					Card card = wastePile.get(i);
+					if (card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
+						if (board.moveToFoundation(foundation, card)) {
+							wastePile.remove(card);
+						}
+					}
+				}
 			}
 		}
 	}
@@ -174,6 +194,20 @@ public class SolitaireGame extends ApplicationAdapter {
 				card.draw(batch, x, y);
 				x -= 43;
 			}
+		}
+	}
+
+	private void drawFoundation() {
+		int x = 100;
+		int y = 400;
+
+		// draw the last card in the foundation
+		for (ArrayList<Card> cards : foundation) {
+			if (!cards.isEmpty()) {
+				Card card = cards.get(cards.size()-1);
+				card.draw(batch, x, y);
+			}
+			x += 43;
 		}
 	}
 }
