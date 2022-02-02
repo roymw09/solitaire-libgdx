@@ -17,7 +17,6 @@ public class SolitaireGame extends ApplicationAdapter {
 	private OrthographicCamera camera;
 	SpriteBatch batch;
 	Texture img;
-	TextureRegion[][] topFrames;
 	ArrayList<Card> deck;
 	ArrayList<Card> wastePile;
 	Board board;
@@ -54,7 +53,6 @@ public class SolitaireGame extends ApplicationAdapter {
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
-		//batch.draw(topFrames[0][0], 0, 0);
 
 		// draw the deck if it still contains cards
 		if (!deck.isEmpty()) {
@@ -99,9 +97,8 @@ public class SolitaireGame extends ApplicationAdapter {
 				for (int i = tableau.get(column).size() - 1; i >= 0; i-= 1){
 					Card card = tableau.get(column).get(i);
 					if(card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
-						// add aces to the foundation
-						if (card.getValue() == 1) {
-							board.moveToFoundation(foundation, card);
+						// places card in the foundation
+						if (board.moveToFoundation(foundation, card)) {
 							tableau.get(column).remove(card);
 						} else {
 							System.out.println(tableau.get(column).get(i));
@@ -121,14 +118,14 @@ public class SolitaireGame extends ApplicationAdapter {
 				board.pickCard(wastePile, deck);
 			}
 
-			// move aces from waste pile to foundation
+			// move cards from waste pile to foundation
 			if (!wastePile.isEmpty()) {
 				for (int i = wastePile.size()-1; i >= wastePile.size()-3 && i >= 0; i--) {
 					Card card = wastePile.get(i);
-					boolean isAce = card.getValue() == 1;
-					if (card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y) && isAce) {
-						board.moveToFoundation(foundation, card);
-						wastePile.remove(card);
+					if (card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
+						if (board.moveToFoundation(foundation, card)) {
+							wastePile.remove(card);
+						}
 					}
 				}
 			}
