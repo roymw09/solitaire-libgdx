@@ -97,13 +97,17 @@ public class SolitaireGame extends ApplicationAdapter {
 					Card card = tableau.get(column).get(i);
 					if(card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
 						// places card in the
-						System.out.println("Here");
 						if (board.moveToFoundation(foundation, card)) {
 							tableau.get(column).remove(card);
-							tableau.get(column).get(i-1).setFaceUp(true);
+							if (i != 0) {
+								tableau.get(column).get(i - 1).setFaceUp(true);
+							}
 						} else if (board.moveToTableau(tableau, card)) {
 							tableau.get(column).remove(card);
-							tableau.get(column).get(i-1).setFaceUp(true);
+							System.out.println(i);
+							if (i != 0) {
+								tableau.get(column).get(i - 1).setFaceUp(true);
+							}
 						}
 						break;
 					}
