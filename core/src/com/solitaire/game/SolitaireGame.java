@@ -100,10 +100,15 @@ public class SolitaireGame extends ApplicationAdapter {
 						System.out.println("Here");
 						if (board.moveToFoundation(foundation, card)) {
 							tableau.get(column).remove(card);
-							tableau.get(column).get(i-1).setFaceUp(true);
+							if (i != 0) {
+								System.out.println(i);
+								tableau.get(column).get(i - 1).setFaceUp(true);
+							}
 						} else if (board.moveToTableau(tableau, card)) {
 							tableau.get(column).remove(card);
-							tableau.get(column).get(i-1).setFaceUp(true);
+							if (i != 0) {
+								tableau.get(column).get(i - 1).setFaceUp(true);
+							}
 						}
 						break;
 					}
