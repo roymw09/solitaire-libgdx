@@ -80,20 +80,52 @@ public class CardManager {
         for (int i = 0; i < 7; i++) {
             if (!tableau.get(i).isEmpty()) {
                 // get the last card in the current tableau pile
-                int lastCard = tableau.get(i).get(tableau.get(i).size()-1).getValue();
+                int lastCard = tableau.get(i).get(tableau.get(i).size() - 1).getValue();
                 // get the first card in the current tableau pile so we can compare its colours
-                boolean matchColour = card.getCardColor().equals(tableau.get(i).get(tableau.get(i).size()-1).getCardColor());
+                boolean matchColour = card.getCardColor().equals(tableau.get(i).get(tableau.get(i).size() - 1).getCardColor());
                 // make sure the colours are different and the card being moved to the tableau is in the correct order
-                if (!matchColour && card.getValue() == lastCard-1) {
+                if (!matchColour && card.getValue() == lastCard - 1) {
                     tableau.get(i).add(card);
                     return true;
                 }
-            }             // if the card is a king, add it to the empty tableau pile if there is one
+            }
+            // if the card is a king, add it to the empty tableau pile if there is one
             else if (card.getValue() == 13) {
                 tableau.get(i).add(card);
                 return true;
             }
         }
         return false;
+    }
+
+    /* if the colors do not match and the card being moved adhere to the logical order of the cards,
+    append all selected cards to the tableau */
+    public boolean moveWithinTableau(ArrayList<ArrayList<Card>> tableau, Card selectedCard, int selectedCardIndex, int selectedPileIndex) {
+        ArrayList<Card> cardsToMove = getSelectedCards(tableau, selectedCardIndex, selectedPileIndex);
+        for (int i = 0; i < 7; i++) {
+            if (!tableau.get(i).isEmpty()) {
+                int lastCard = tableau.get(i).get(tableau.get(i).size() - 1).getValue();
+                boolean colourMatch = selectedCard.getCardColor().equals(tableau.get(i).get(tableau.get(i).size() - 1).getCardColor());
+                if (!colourMatch && selectedCard.getValue() == lastCard-1) {
+                    tableau.get(i).addAll(cardsToMove);
+                    tableau.get(selectedPileIndex).removeAll(cardsToMove);
+                    return true;
+                }
+            }
+            else if (selectedCard.getValue() == 13) {
+                tableau.get(i).addAll(cardsToMove);
+                tableau.get(selectedPileIndex).removeAll(cardsToMove);
+            }
+        }
+        return false;
+    }
+
+    // get all cards stacked on top of the card that was clicked
+    public ArrayList<Card> getSelectedCards(ArrayList<ArrayList<Card>> tableau, int selectedCardIndex, int selectedPileIndex) {
+        ArrayList<Card> selectedCards = new ArrayList<>();
+        for (int i = selectedCardIndex; i < tableau.get(selectedPileIndex).size(); i++) {
+            selectedCards.add(tableau.get(selectedPileIndex).get(i));
+        }
+        return selectedCards;
     }
 }

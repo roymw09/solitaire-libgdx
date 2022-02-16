@@ -48,6 +48,10 @@ public class Board {
         return cardManager.moveToTableau(tableau, card);
     }
 
+    public boolean moveWithinTableau(ArrayList<ArrayList<Card>> tableau, Card selectedCard, int selectedCardIndex, int selectedPileIndex) {
+        return cardManager.moveWithinTableau(tableau, selectedCard, selectedCardIndex, selectedPileIndex);
+    }
+
     public void initBoard() {
         initTableau();
         initFoundation();
