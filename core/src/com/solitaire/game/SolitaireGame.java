@@ -86,12 +86,12 @@ public class SolitaireGame extends ApplicationAdapter {
 			int spriteLocationY = 400;
 			int[] currentPosition = {tableauDefaultPosition[0], tableauDefaultPosition[1]};
 
-			//Changed it to unproject to get accurate hit boxes on the cards
+			// Changed it to unproject to get accurate hit boxes on the cards
 			Vector3 touchPoint = new Vector3();
 			touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 			camera.unproject(touchPoint);
 
-			//Loop through the coordinates to find the column then the row
+			// Loop through the coordinates to find the column then the row
 			int column = -1;
 			for (int i = 0; i < 7; i++) {
 				if (touchPoint.x > (currentPosition[0] + (tableauDefaultPosition[2] * i)) && touchPoint.x < (currentPosition[0] + 40 + (tableauDefaultPosition[2] * i))) {
