@@ -7,18 +7,18 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class SolitaireGame extends ApplicationAdapter {
 	private OrthographicCamera camera;
 	SpriteBatch batch;
 	Texture img;
 	ArrayList<Card> deck;
-	ArrayList<Card> wastePile;
+	Stack<Card> wastePile;
 	Board board;
 	ArrayList<ArrayList<Card>> tableau;
 	ArrayList<ArrayList<Card>> foundation;
@@ -122,14 +122,11 @@ public class SolitaireGame extends ApplicationAdapter {
 
 			// move cards from waste pile to foundation or tableau
 			if (!wastePile.isEmpty()) {
-				for (int i = wastePile.size()-1; i >= wastePile.size()-3 && i >= 0; i--) {
-					Card card = wastePile.get(i);
-					if (card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
-						if (board.moveToFoundation(foundation, card)) {
-							wastePile.remove(card);
-						} else if (board.moveToTableau(tableau, card)) {
-							wastePile.remove(card);
-						}
+				Card card = wastePile.lastElement();
+				boolean cardWasClicked = card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y);
+				if (cardWasClicked) {
+					if (board.moveToFoundation(foundation, card) || board.moveToTableau(tableau, card)) {
+						wastePile.remove(card);
 					}
 				}
 			}
@@ -182,11 +179,8 @@ public class SolitaireGame extends ApplicationAdapter {
 		int x = 434;
 		int y = 400;
 		if (!wastePile.isEmpty()) {
-			for (int i = wastePile.size()-1; i >= wastePile.size()-3 && i >= 0; i--) {
-				Card card = wastePile.get(i);
-				card.draw(batch, x, y);
-				x -= 43;
-			}
+			Card card = wastePile.lastElement();
+			card.draw(batch, x, y);
 		}
 	}
 
