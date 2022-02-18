@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Stack;
 
 public class CardManager {
     Texture front_img;
@@ -39,12 +40,12 @@ public class CardManager {
     }
 
     // pick the first card from the deck
-    public boolean pickCard(ArrayList<Card> wastePile, ArrayList<Card> deck) {
+    public boolean pickCard(Stack<Card> wastePile, ArrayList<Card> deck) {
         if (deck.size() > 0) {
             Card card = deck.get(0);
             card.setFaceUp(true);
             deck.remove(card);
-            wastePile.add(card);
+            wastePile.push(card);
             return true;
         } else {
             deck.addAll(wastePile);
@@ -115,6 +116,7 @@ public class CardManager {
             else if (selectedCard.getValue() == 13) {
                 tableau.get(i).addAll(cardsToMove);
                 tableau.get(selectedPileIndex).removeAll(cardsToMove);
+                return true;
             }
         }
         return false;

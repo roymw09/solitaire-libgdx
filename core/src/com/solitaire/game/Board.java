@@ -1,12 +1,13 @@
 package com.solitaire.game;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class Board {
     private final ArrayList<ArrayList<Card>> tableau;
     private final ArrayList<ArrayList<Card>> foundation;
     private final ArrayList<Card> deck;
-    private final ArrayList<Card> wastePile;
+    private final Stack<Card> wastePile;
     private final CardManager cardManager;
 
     public Board() {
@@ -14,7 +15,7 @@ public class Board {
         this.deck = cardManager.MakeCards();
         this.tableau = new ArrayList<>();
         this.foundation = new ArrayList<>();
-        this.wastePile = new ArrayList<>();
+        this.wastePile = new Stack<>();
     }
 
     private void initTableau() {
@@ -35,7 +36,7 @@ public class Board {
         }
     }
 
-    public void pickCard(ArrayList<Card> wastePile, ArrayList<Card> deck) {
+    public void pickCard(Stack<Card> wastePile, ArrayList<Card> deck) {
         cardManager.pickCard(wastePile, deck);
     }
 
@@ -65,7 +66,7 @@ public class Board {
         return foundation;
     }
 
-    public ArrayList<Card> getWastePile() {
+    public Stack<Card> getWastePile() {
         return wastePile;
     }
 
