@@ -3,6 +3,7 @@ package com.solitaire.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -28,7 +29,6 @@ public class SolitaireGame extends ApplicationAdapter {
 	boolean tableauIsInitialized = false;
 
 
-
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
@@ -51,7 +51,14 @@ public class SolitaireGame extends ApplicationAdapter {
 		ScreenUtils.clear(34, 139, 34, 1);
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
+		float r = 53/255f;
+		float g = 133/255f;
+		float b = 27/255f;
+		float a = 255/255f;
+		Gdx.gl.glClearColor(r,g,b,a);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
+		new Placeholder(new Sprite(new Texture("PlaceholderDeck.png"))).draw(batch, 498, 400);
 
 		// draw the deck if it still contains cards
 		if (!deck.isEmpty()) {
@@ -166,6 +173,7 @@ public class SolitaireGame extends ApplicationAdapter {
 		int counterX = 240;
 		int counterY = 300;
 		for (ArrayList<Card> cards : tableau) {
+			new Placeholder(new Sprite(new Texture("PlaceholderTemplate.png"))).draw(batch, counterX, counterY);
 			for (Card card : cards) {
 				card.draw(batch, counterX, counterY);
 				counterY -= 20;
@@ -178,6 +186,7 @@ public class SolitaireGame extends ApplicationAdapter {
 	private void drawWastePile() {
 		int x = 434;
 		int y = 400;
+		new Placeholder(new Sprite(new Texture("PlaceholderWaste.png"))).draw(batch, x, y);
 		if (!wastePile.isEmpty()) {
 			Card card = wastePile.lastElement();
 			card.draw(batch, x, y);
@@ -190,6 +199,7 @@ public class SolitaireGame extends ApplicationAdapter {
 
 		// draw the last card in the foundation
 		for (ArrayList<Card> cards : foundation) {
+			new Placeholder(new Sprite(new Texture("PlaceholderAce.png"))).draw(batch, x, y);
 			if (!cards.isEmpty()) {
 				Card card = cards.get(cards.size()-1);
 				card.draw(batch, x, y);
