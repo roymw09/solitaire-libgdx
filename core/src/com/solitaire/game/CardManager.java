@@ -17,22 +17,24 @@ public class CardManager {
     public ArrayList<Card> MakeCards() {
         front_img = new Texture("cards_front.png");
         int x = 0;
-        int y = 0;
+        int y = -2;
         int width = 43;
-        int height = 63;
+        int height = 61;
         String[] suits = { "Spades", "Clubs", "Hearts", "Diamonds" };
         for (int i = 0; i < suits.length; i++) {
+            if (i==3) y-=1;
+            y+=2;
             for (int a = 1; a <= 13; a++) {
                 if (a == 1) {
                     frontCards = new Sprite(front_img, 515, y, width, height);
                 }
                 else {
                     frontCards = new Sprite(front_img, x, y, width, height);
-                    x += 43;
+                    x += width;
                 }
                 deck.add(new Card(a, suits[i], frontCards, backCards));
             }
-            y += 62;
+            y += height;
             x = 0;
         }
         Collections.shuffle(deck);
