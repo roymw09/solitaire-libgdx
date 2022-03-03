@@ -3,6 +3,7 @@ package com.solitaire.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
@@ -16,15 +17,21 @@ public class Board {
     private final ArrayList<ArrayList<Card>> tableau;
     private final ArrayList<ArrayList<Card>> foundation;
     private final Stack<Card> wastePile;
-
-    private int[] tableauDefaultPosition = {240, 115, 43, -20};
+    private int score;
+    private final Sprite card_back;
+    private final Texture cardBackImage = new Texture("card_back.png");
+    private final int[] tableauDefaultPosition = {240, 115, 43, -20};
     private boolean initial = false;
+    private boolean standardMode;
 
     public Board() {
         this.deck = makeCards();
         this.tableau = new ArrayList<>();
         this.foundation = new ArrayList<>();
         this.wastePile = new Stack<>();
+        this.card_back = new Sprite(cardBackImage);
+        this.card_back.setSize(40, 63);
+        this.card_back.setPosition(498, 400);
     }
 
     public ArrayList<Card> makeCards() {
@@ -146,6 +153,9 @@ append all selected cards to the tableau */
                 if (!colourMatch && selectedCard.getValue() == lastCard-1) {
                     tableau.get(i).addAll(cardsToMove);
                     tableau.get(selectedPileIndex).removeAll(cardsToMove);
+                    if (standardMode) {
+                        score+=3; // 3 points for card moved from one tableau pile to another
+                    }
                     return true;
                 }
             }
@@ -165,6 +175,17 @@ append all selected cards to the tableau */
             selectedCards.add(tableau.get(selectedPileIndex).get(i));
         }
         return selectedCards;
+    }
+
+    public void drawScore(SpriteBatch batch) {
+        BitmapFont font = new BitmapFont();
+        font.draw(batch, "Score: " + score, 600, 470);
+    }
+
+    public void drawDeck(SpriteBatch batch) {
+        if (!deck.isEmpty()) {
+            card_back.draw(batch);
+        }
     }
 
     public void drawInitTableau(SpriteBatch batch) {
@@ -292,19 +313,12 @@ append all selected cards to the tableau */
         initFoundation();
     }
 
-    public ArrayList<ArrayList<Card>> getTableau() {
-        return tableau;
-    }
-
-    public ArrayList<ArrayList<Card>> getFoundation() {
-        return foundation;
-    }
-
-    public Stack<Card> getWastePile() {
-        return wastePile;
-    }
-
-    public ArrayList<Card> getDeck() {
-        return deck;
+    public void setStandardMode(boolean standardMode) {
+        if (standardMode) {
+            this.score = 0;
+        } else {
+            this.score = -52;
+        }
+        this.standardMode = standardMode;
     }
 }
