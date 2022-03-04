@@ -120,6 +120,21 @@ public class Board {
         return false;
     }
 
+    public boolean moveFromFoundationToTableau(ArrayList<ArrayList<Card>> foundation, Card card) {
+        for (ArrayList<Card> cards : foundation) {
+            if (moveToTableau(tableau, card)) {
+                cards.remove(card);
+                if (standardMode) {
+                    score-=10;
+                } else {
+                    score-=5;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean moveToTableau(ArrayList<ArrayList<Card>> tableau, Card card) {
         for (int i = 0; i < 7; i++) {
             if (!tableau.get(i).isEmpty()) {
@@ -250,7 +265,7 @@ append all selected cards to the tableau */
         }
     }
 
-    public void moveCard(OrthographicCamera camera) {
+    public boolean moveCard(OrthographicCamera camera) {
         int spriteLocationX = 498;
         int spriteLocationY = 400;
         int[] currentPosition = {tableauDefaultPosition[0], tableauDefaultPosition[1]};
@@ -275,15 +290,41 @@ append all selected cards to the tableau */
                     // places card in the foundation
                     if (moveToFoundation(foundation, card)) {
                         tableau.get(column).remove(card);
-                        if (i != 0) {
-                            tableau.get(column).get(i - 1).setFaceUp(true);
+                        // 10 points for moving card to foundation in standard mode
+                        if (standardMode) {
+                            score+=10;
+                        } else {
+                            // 5 points in vegas mode
+                            score+=5;
                         }
+                        if (i != 0 && !tableau.get(column).get(i-1).getFaceUp()) {
+                            tableau.get(column).get(i - 1).setFaceUp(true);
+                            // 5 points for every card turned face up
+                            if (standardMode) score+=5;
+                        }
+                        return true;
                     } else if (moveWithinTableau(tableau, card, i, column)) {
-                        if (i != 0) {
+                        if (i != 0 && !tableau.get(column).get(i-1).getFaceUp()) {
                             tableau.get(column).get(i - 1).setFaceUp(true);
+                            // 5 points for every card turned face up
+                            if (standardMode) score+=5;
                         }
+                        return true;
                     }
                     break;
+                }
+
+            }
+        }
+
+        // move card from foundation to tableau
+        for (ArrayList<Card> cards : foundation) {
+            if (cards.size() > 0) {
+                Card card = cards.get(cards.size()-1);
+                if (card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
+                    if (moveFromFoundationToTableau(foundation, card)) {
+                        return true;
+                    }
                 }
             }
         }
@@ -301,11 +342,16 @@ append all selected cards to the tableau */
             Card card = wastePile.lastElement();
             boolean cardWasClicked = card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y);
             if (cardWasClicked) {
-                if (moveToFoundation(foundation, card) || moveToTableau(tableau, card)) {
+                if (moveToTableau(tableau, card)) {
                     wastePile.remove(card);
+                    // 5 points for moving from the wastepile to the tableau
+                    if (standardMode) {
+                        score+=5;
+                    }
                 }
             }
         }
+        return false;
     }
 
     public void initBoard() {

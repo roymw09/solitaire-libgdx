@@ -134,5 +134,6 @@ public class SolitaireGame extends ApplicationAdapter {
 	@Override
 	public void dispose () {
 		batch.dispose();
+		stage.dispose();
 	}
 }
