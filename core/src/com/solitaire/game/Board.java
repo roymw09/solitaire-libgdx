@@ -84,7 +84,7 @@ public class Board {
         }
     }
 
-    public boolean pickCard(Stack<Card> wastePile, ArrayList<Card> deck) {
+    public boolean pickCard(ArrayList<Card> deck) {
         if (deck.size() > 0) {
             Card card = deck.get(0);
             card.setFaceUp(true);
@@ -98,7 +98,23 @@ public class Board {
         return false;
     }
 
-    public boolean moveToFoundation(ArrayList<ArrayList<Card>> foundation, Card card) {
+    private boolean moveFromWastepile(Vector3 touchPoint) {
+        Card card = wastePile.lastElement();
+        boolean cardWasClicked = card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y);
+        if (cardWasClicked) {
+            if (moveToTableau(card) || moveToFoundation(card)) {
+                wastePile.remove(card);
+                // 5 points for moving from the wastepile to the tableau
+                if (standardMode) {
+                    score+=5;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean moveToFoundation(Card card) {
         for (int i = 0; i < 4; i++) {
             if (!foundation.get(i).isEmpty()) {
                 // get the last card in the current foundation pile
@@ -120,10 +136,9 @@ public class Board {
         return false;
     }
 
-    public boolean moveFromFoundationToTableau(ArrayList<ArrayList<Card>> foundation, Card card) {
+    public boolean moveFromFoundationToTableau(Card card) {
         for (ArrayList<Card> cards : foundation) {
-            if (moveToTableau(tableau, card)) {
-                cards.remove(card);
+            if (moveToTableau(card)) {
                 if (standardMode) {
                     score-=10;
                 } else {
@@ -135,7 +150,7 @@ public class Board {
         return false;
     }
 
-    public boolean moveToTableau(ArrayList<ArrayList<Card>> tableau, Card card) {
+    public boolean moveToTableau(Card card) {
         for (int i = 0; i < 7; i++) {
             if (!tableau.get(i).isEmpty()) {
                 // get the last card in the current tableau pile
@@ -159,7 +174,7 @@ public class Board {
 
     /* if the colors do not match and the card being moved adhere to the logical order of the cards,
 append all selected cards to the tableau */
-    public boolean moveWithinTableau(ArrayList<ArrayList<Card>> tableau, Card selectedCard, int selectedCardIndex, int selectedPileIndex) {
+    public boolean moveWithinTableau(Card selectedCard, int selectedCardIndex, int selectedPileIndex) {
         ArrayList<Card> cardsToMove = getSelectedCards(tableau, selectedCardIndex, selectedPileIndex);
         for (int i = 0; i < 7; i++) {
             if (!tableau.get(i).isEmpty()) {
@@ -275,21 +290,12 @@ append all selected cards to the tableau */
         touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         camera.unproject(touchPoint);
 
-        // Loop through the coordinates to find the column then the row
-        int column = -1;
-        for (int i = 0; i < 7; i++) {
-            if (touchPoint.x > (currentPosition[0] + (tableauDefaultPosition[2] * i)) && touchPoint.x < (currentPosition[0] + 40 + (tableauDefaultPosition[2] * i))) {
-                column = i;
-                break;
-            }
-        }
-        if (column != -1){
-            for (int i = tableau.get(column).size() - 1; i >= 0; i-= 1){
-                Card card = tableau.get(column).get(i);
-                if(card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
+        for (ArrayList<Card> cards: tableau) {
+            for (Card card : cards) {
+                if (card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
                     // places card in the foundation
-                    if (moveToFoundation(foundation, card)) {
-                        tableau.get(column).remove(card);
+                    if (cards.indexOf(card) == cards.size()-1 && moveToFoundation(card)) {
+                        cards.remove(card);
                         // 10 points for moving card to foundation in standard mode
                         if (standardMode) {
                             score+=10;
@@ -297,32 +303,32 @@ append all selected cards to the tableau */
                             // 5 points in vegas mode
                             score+=5;
                         }
-                        if (i != 0 && !tableau.get(column).get(i-1).getFaceUp()) {
-                            tableau.get(column).get(i - 1).setFaceUp(true);
+                        if (cards.size() != 0 && !cards.get(cards.size()-1).getFaceUp()) {
+                            cards.get(cards.size()-1).setFaceUp(true);
                             // 5 points for every card turned face up
                             if (standardMode) score+=5;
                         }
                         return true;
-                    } else if (moveWithinTableau(tableau, card, i, column)) {
-                        if (i != 0 && !tableau.get(column).get(i-1).getFaceUp()) {
-                            tableau.get(column).get(i - 1).setFaceUp(true);
+                        // move card within tableau
+                    } else if (moveWithinTableau(card, cards.indexOf(card), tableau.indexOf(cards))) {
+                        if (cards.size() != 0 && !cards.get(cards.size()-1).getFaceUp()) {
+                            cards.get(cards.size()-1).setFaceUp(true);
                             // 5 points for every card turned face up
                             if (standardMode) score+=5;
                         }
                         return true;
                     }
-                    break;
                 }
-
             }
         }
 
-        // move card from foundation to tableau
+        // move top card from foundation to tableau
         for (ArrayList<Card> cards : foundation) {
             if (cards.size() > 0) {
                 Card card = cards.get(cards.size()-1);
                 if (card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
-                    if (moveFromFoundationToTableau(foundation, card)) {
+                    if (moveFromFoundationToTableau(card)) {
+                        cards.remove(card);
                         return true;
                     }
                 }
@@ -334,22 +340,12 @@ append all selected cards to the tableau */
         System.out.println(bounds);
         System.out.println(touchPoint.x + ", " + touchPoint.y);
         if (bounds.contains(touchPoint.x, touchPoint.y)) {
-            pickCard(wastePile, deck);
+            pickCard(deck);
         }
 
-        // move cards from waste pile to foundation or tableau
+        // move cards from waste pile to tableau
         if (!wastePile.isEmpty()) {
-            Card card = wastePile.lastElement();
-            boolean cardWasClicked = card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y);
-            if (cardWasClicked) {
-                if (moveToTableau(tableau, card)) {
-                    wastePile.remove(card);
-                    // 5 points for moving from the wastepile to the tableau
-                    if (standardMode) {
-                        score+=5;
-                    }
-                }
-            }
+            moveFromWastepile(touchPoint);
         }
         return false;
     }
