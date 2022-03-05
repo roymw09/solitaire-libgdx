@@ -13,6 +13,8 @@ public class CardManager {
 
     public void drawDeck(SpriteBatch batch) { board.drawDeck(batch); }
 
+    public void drawTime(SpriteBatch batch) { board.drawTime(batch); }
+
     public void drawScore(SpriteBatch batch) { board.drawScore(batch); }
 
     public void drawInitTableau(SpriteBatch batch) {
@@ -46,4 +48,14 @@ public class CardManager {
     public boolean isPlaying() { return board.isPlaying(); }
 
     public void setPlaying(boolean playing) {board.setPlaying(playing); }
+
+    public boolean isTimedGame() { return board.isTimedGame(); }
+
+    public void setTimedGame(boolean timedGame) { board.setTimedGame(timedGame); }
+
+    public int getScore() { return board.getScore(); }
+
+    public void setScore(int score) { board.setScore(score); }
+
+    public float getTimer() { return board.getTimer(); }
 }

@@ -79,12 +79,13 @@ public class MenuScreen implements Screen {
         final TextButton vegasButton = new TextButton("Vegas", textButtonStyle);
         final CheckBox drawOne = new CheckBox("Draw One", checkBoxStyle);
         final CheckBox drawThree = new CheckBox("Draw Three", checkBoxStyle);
+        final CheckBox timedGame = new CheckBox("Timed Game", checkBoxStyle);
 
         standardButton.setX(200);
-        standardButton.setY(100);
+        standardButton.setY(200);
 
         vegasButton.setX(400);
-        vegasButton.setY(100);
+        vegasButton.setY(200);
 
         standardButton.addListener(new ChangeListener() {
             @Override
@@ -107,16 +108,18 @@ public class MenuScreen implements Screen {
         });
 
         drawOne.setX(350);
-        drawOne.setY(75);
+        drawOne.setY(175);
 
         drawThree.setX(350);
-        drawThree.setY(25);
+        drawThree.setY(125);
+
+        timedGame.setX(350);
+        timedGame.setY(75);
 
         drawOne.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (drawOne.isChecked() && !drawThree.isChecked()) {
-                    drawOne.setChecked(true);
                     cardManager.setDrawThree(false);
                 } else {
                     drawOne.setChecked(false);
@@ -128,7 +131,6 @@ public class MenuScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (drawThree.isChecked() && !drawOne.isChecked()) {
-                    drawThree.setChecked(true);
                     cardManager.setDrawThree(true);
                 } else {
                     drawThree.setChecked(false);
@@ -136,10 +138,18 @@ public class MenuScreen implements Screen {
             }
         });
 
+        timedGame.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                cardManager.setTimedGame(timedGame.isChecked());
+            }
+        });
+
         stage.addActor(standardButton);
         stage.addActor(vegasButton);
         stage.addActor(drawOne);
         stage.addActor(drawThree);
+        stage.addActor(timedGame);
     }
 
     @Override
