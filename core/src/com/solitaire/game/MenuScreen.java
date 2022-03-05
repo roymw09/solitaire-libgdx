@@ -118,7 +118,6 @@ public class MenuScreen implements Screen {
                 if (drawOne.isChecked() && !drawThree.isChecked()) {
                     drawOne.setChecked(true);
                     cardManager.setDrawThree(false);
-                    System.out.println(drawOne.getX());
                 } else {
                     drawOne.setChecked(false);
                 }
