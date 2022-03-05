@@ -25,6 +25,9 @@ public class Board {
     private int passedThroughDeck = 0;
     private boolean drawThree;
     private boolean playing;
+    private boolean timedGame;
+    private float timer;
+    private String timerString;
 
     public Board() {
         this.deck = makeCards();
@@ -34,6 +37,9 @@ public class Board {
         this.card_back = new Sprite(cardBackImage);
         this.card_back.setSize(40, 63);
         this.card_back.setPosition(498, 400);
+        if (timedGame) {
+            this.timer = 0;
+        }
     }
 
     public ArrayList<Card> makeCards() {
@@ -289,9 +295,16 @@ append all selected cards to the tableau */
         return selectedCards;
     }
 
+    public void drawTime(SpriteBatch batch) {
+        BitmapFont font = new BitmapFont();
+        timer += Gdx.graphics.getDeltaTime();
+        timerString = Float.toString(timer);
+        font.draw(batch, timerString, 650, 450);
+    }
+
     public void drawScore(SpriteBatch batch) {
         BitmapFont font = new BitmapFont();
-        font.draw(batch, "Score: " + score, 600, 470);
+        font.draw(batch, "Score: " + score, 650, 470);
     }
 
     public void drawDeck(SpriteBatch batch) {
@@ -390,5 +403,25 @@ append all selected cards to the tableau */
 
     public void setPlaying(boolean playing) {
         this.playing = playing;
+    }
+
+    public boolean isTimedGame() {
+        return timedGame;
+    }
+
+    public void setTimedGame(boolean timedGame) {
+        this.timedGame = timedGame;
+    }
+
+    public int getScore() {
+        return this.score;
+    }
+
+    public void setScore(int score) {
+        this.score += score;
+    }
+
+    public float getTimer() {
+        return this.timer;
     }
 }

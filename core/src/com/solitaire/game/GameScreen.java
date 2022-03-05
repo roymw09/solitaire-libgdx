@@ -21,6 +21,7 @@ public class GameScreen implements Screen {
     private final Viewport viewport;
     private final OrthographicCamera camera;
     private boolean tableauIsInitialized = false;
+    private int currentTime;
 
     public GameScreen(CardManager cardManager) {
         this.cardManager = cardManager;
@@ -28,10 +29,10 @@ public class GameScreen implements Screen {
         camera = new OrthographicCamera();
         viewport = new FitViewport(800, 480, camera);
         viewport.apply();
-
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.setToOrtho(false, screenWidth, screenHeight);
         camera.update();
+        currentTime = (int) cardManager.getTimer();
     }
 
     @Override
@@ -72,6 +73,18 @@ public class GameScreen implements Screen {
 
         // draw score
         cardManager.drawScore(batch);
+
+        // draw timer
+        if (cardManager.isTimedGame()) {
+            cardManager.drawTime(batch);
+        }
+
+        // lose 2 points for every 10 seconds elapsed during a timed game
+        int temp = (int) cardManager.getTimer();
+        if (temp % 10 == 0 && temp > currentTime) {
+            currentTime = temp;
+            cardManager.setScore(-2);
+        }
 
         boolean buttonWasClicked = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
         if (buttonWasClicked) {
