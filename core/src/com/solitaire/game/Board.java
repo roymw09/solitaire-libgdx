@@ -22,6 +22,9 @@ public class Board {
     private final Texture cardBackImage = new Texture("card_back.png");
     private boolean initial = false;
     private boolean standardMode;
+    private int passedThroughDeck = 0;
+    private boolean drawThree;
+    private boolean playing;
 
     public Board() {
         this.deck = makeCards();
@@ -91,8 +94,17 @@ public class Board {
             wastePile.push(card);
             return true;
         } else {
+            passedThroughDeck++;
             deck.addAll(wastePile);
             wastePile.clear();
+        }
+        // Remove score after 1 or 4 passes through deck
+        if (standardMode) {
+            if (drawThree && passedThroughDeck > 4) {
+                score-=20;
+            } else if (!drawThree && passedThroughDeck > 1) {
+                score-=100;
+            }
         }
         return false;
     }
@@ -138,6 +150,7 @@ public class Board {
     public boolean moveFromFoundationToTableau(Card card) {
         for (ArrayList<Card> cards : foundation) {
             if (moveToTableau(card)) {
+                // lose score when card comes out of foundation
                 if (standardMode) {
                     score-=10;
                 } else {
@@ -182,8 +195,9 @@ append all selected cards to the tableau */
                 if (!colourMatch && selectedCard.getValue() == lastCard-1) {
                     tableau.get(i).addAll(cardsToMove);
                     tableau.get(selectedPileIndex).removeAll(cardsToMove);
+                    // 3 points for card moved from one tableau pile to another
                     if (standardMode) {
-                        score+=3; // 3 points for card moved from one tableau pile to another
+                        score+=3;
                     }
                     return true;
                 }
@@ -360,5 +374,21 @@ append all selected cards to the tableau */
             this.score = -52;
         }
         this.standardMode = standardMode;
+    }
+
+    public boolean isDrawThree() {
+        return drawThree;
+    }
+
+    public void setDrawThree(boolean drawThree) {
+        this.drawThree = drawThree;
+    }
+
+    public boolean isPlaying() {
+        return playing;
+    }
+
+    public void setPlaying(boolean playing) {
+        this.playing = playing;
     }
 }

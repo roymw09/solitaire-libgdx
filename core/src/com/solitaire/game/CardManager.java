@@ -38,4 +38,12 @@ public class CardManager {
     public void setStandardMode(boolean mode) {
         board.setStandardMode(mode);
     }
+
+    public boolean isDrawThree() { return board.isDrawThree(); }
+
+    public void setDrawThree(boolean drawThree) { board.setDrawThree(drawThree); }
+
+    public boolean isPlaying() { return board.isPlaying(); }
+
+    public void setPlaying(boolean playing) {board.setPlaying(playing); }
 }
