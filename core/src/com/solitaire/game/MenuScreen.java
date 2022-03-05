@@ -39,7 +39,6 @@ public class MenuScreen implements Screen {
     protected TextButtonStyle textButtonStyle;
     protected CheckBoxStyle checkBoxStyle;
 
-
     public MenuScreen(Game parent) {
         this.parent = parent;
         cardManager = new CardManager();
@@ -60,7 +59,6 @@ public class MenuScreen implements Screen {
 
         checkBoxStyle = new CheckBoxStyle();
         checkBoxStyle.font = font;
-
         checkBoxStyle.checkboxOn = checkedSkin.getDrawable("checked");
         checkBoxStyle.checkboxOff = uncheckedSkin.getDrawable("unchecked");
 
@@ -81,7 +79,6 @@ public class MenuScreen implements Screen {
         final TextButton vegasButton = new TextButton("Vegas", textButtonStyle);
         final CheckBox drawOne = new CheckBox("Draw One", checkBoxStyle);
         final CheckBox drawThree = new CheckBox("Draw Three", checkBoxStyle);
-
 
         standardButton.setX(200);
         standardButton.setY(100);
@@ -109,12 +106,9 @@ public class MenuScreen implements Screen {
             }
         });
 
-        //drawOne.setChecked(false);
         drawOne.setX(350);
         drawOne.setY(75);
 
-
-        //drawThree.setChecked(false);
         drawThree.setX(350);
         drawThree.setY(25);
 
@@ -124,6 +118,7 @@ public class MenuScreen implements Screen {
                 if (drawOne.isChecked() && !drawThree.isChecked()) {
                     drawOne.setChecked(true);
                     cardManager.setDrawThree(false);
+                    System.out.println(drawOne.getX());
                 } else {
                     drawOne.setChecked(false);
                 }
