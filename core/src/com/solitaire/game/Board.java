@@ -106,7 +106,7 @@ public class Board {
         Card card = wastePile.lastElement();
         boolean cardWasClicked = card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y);
         if (cardWasClicked) {
-            if (moveToTableau(card) || moveToFoundation(card)) {
+            if (moveToTableau(card)) {
                 wastePile.remove(card);
                 // 5 points for moving from the wastepile to the tableau
                 if (standardMode) {
