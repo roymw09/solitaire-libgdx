@@ -3,34 +3,39 @@ package com.solitaire.game;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.util.ArrayList;
+import java.util.Stack;
+
 public class CardManager {
     private final Board board;
+    private final BoardDrawer boardDrawer;
 
     public CardManager() {
         board = new Board();
         board.initBoard();
+        boardDrawer = new BoardDrawer();
     }
 
-    public void drawDeck(SpriteBatch batch) { board.drawDeck(batch); }
+    public void drawDeck(SpriteBatch batch, ArrayList<Card> deck) { boardDrawer.drawDeck(batch, deck); }
 
-    public void drawTime(SpriteBatch batch) { board.drawTime(batch); }
+    public void drawTime(SpriteBatch batch, float timer) { boardDrawer.drawTime(batch, timer); }
 
-    public void drawScore(SpriteBatch batch) { board.drawScore(batch); }
+    public void drawScore(SpriteBatch batch, int score) { boardDrawer.drawScore(batch, score); }
 
-    public void drawInitTableau(SpriteBatch batch) {
-        board.drawInitTableau(batch);
+    public void drawInitTableau(SpriteBatch batch, ArrayList<ArrayList<Card>> tableau) {
+        boardDrawer.drawInitTableau(batch, tableau);
     }
 
-    public void drawTableau(SpriteBatch batch) {
-        board.drawTableau(batch);
+    public void drawTableau(SpriteBatch batch, ArrayList<ArrayList<Card>> tableau) {
+        boardDrawer.drawTableau(batch, tableau);
     }
 
-    public void drawWastePile(SpriteBatch batch) {
-        board.drawWastePile(batch);
+    public void drawWastePile(SpriteBatch batch, Stack<Card> wastePile) {
+        boardDrawer.drawWastePile(batch, wastePile);
     }
 
-    public void drawFoundation(SpriteBatch batch) {
-        board.drawFoundation(batch);
+    public void drawFoundation(SpriteBatch batch, ArrayList<ArrayList<Card>> foundation) {
+        boardDrawer.drawFoundation(batch, foundation);
     }
 
     public void moveCard(OrthographicCamera camera) {
@@ -57,5 +62,17 @@ public class CardManager {
 
     public void setScore(int score) { board.setScore(score); }
 
-    public float getTimer() { return board.getTimer(); }
+    public ArrayList<Card> getDeck() {
+        return board.getDeck();
+    }
+
+    public ArrayList<ArrayList<Card>> getTableau() { return board.getTableau(); }
+
+    public Stack<Card> getWastePile() {
+        return board.getWastePile();
+    }
+
+    public ArrayList<ArrayList<Card>> getFoundation() {
+        return board.getFoundation();
+    }
 }

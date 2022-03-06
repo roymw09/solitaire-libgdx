@@ -3,9 +3,7 @@ package com.solitaire.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -18,28 +16,17 @@ public class Board {
     private final ArrayList<ArrayList<Card>> foundation;
     private final Stack<Card> wastePile;
     private int score;
-    private final Sprite card_back;
-    private final Texture cardBackImage = new Texture("card_back.png");
-    private boolean initial = false;
     private boolean standardMode;
     private int passedThroughDeck = 0;
     private boolean drawThree;
     private boolean playing;
     private boolean timedGame;
-    private float timer;
-    private String timerString;
 
     public Board() {
         this.deck = makeCards();
         this.tableau = new ArrayList<>();
         this.foundation = new ArrayList<>();
         this.wastePile = new Stack<>();
-        this.card_back = new Sprite(cardBackImage);
-        this.card_back.setSize(40, 63);
-        this.card_back.setPosition(498, 400);
-        if (timedGame) {
-            this.timer = 0;
-        }
     }
 
     public ArrayList<Card> makeCards() {
@@ -119,7 +106,7 @@ public class Board {
         Card card = wastePile.lastElement();
         boolean cardWasClicked = card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y);
         if (cardWasClicked) {
-            if (moveToTableau(card)) {
+            if (moveToTableau(card) || moveToFoundation(card)) {
                 wastePile.remove(card);
                 // 5 points for moving from the wastepile to the tableau
                 if (standardMode) {
@@ -133,20 +120,20 @@ public class Board {
 
     public boolean moveToFoundation(Card card) {
         for (int i = 0; i < 4; i++) {
-            if (!foundation.get(i).isEmpty()) {
-                // get the last card in the current foundation pile
-                int lastCard = foundation.get(i).get(foundation.get(i).size()-1).getValue();
-                // get the first card in the current foundation pile so we can compare its suit to the card being moved
-                boolean suitMatches = card.getSuit().equals(foundation.get(i).get(0).getSuit());
-                // make sure the suits match and the card being moved to the foundation is in the correct order
-                if (suitMatches && card.getValue() == lastCard+1) {
-                    foundation.get(i).add(card);
-                    return true;
-                }
-            }
-            // if the card is an ace, add it to the empty foundation pile
-            else if (card.getValue() == 1) {
+            // get the last card in the current foundation pile
+            int lastCard = (!foundation.get(i).isEmpty()) ? foundation.get(i).get(foundation.get(i).size()-1).getValue() : 0;
+            // get the first card in the current foundation pile so we can compare its suit to the card being moved
+            boolean suitMatches = foundation.get(i).isEmpty() || card.getSuit().equals(foundation.get(i).get(0).getSuit());
+            // make sure the suits match and the card being moved to the foundation is in the correct order
+            if (suitMatches && card.getValue() == lastCard+1) {
                 foundation.get(i).add(card);
+                // 10 points for moving card to foundation in standard mode
+                if (standardMode) {
+                    score+=10;
+                } else {
+                    // 5 points in vegas mode
+                    score+=5;
+                }
                 return true;
             }
         }
@@ -154,35 +141,29 @@ public class Board {
     }
 
     public boolean moveFromFoundationToTableau(Card card) {
-        for (ArrayList<Card> cards : foundation) {
-            if (moveToTableau(card)) {
-                // lose score when card comes out of foundation
-                if (standardMode) {
-                    score-=10;
-                } else {
-                    score-=5;
-                }
-                return true;
+        if (moveToTableau(card)) {
+            // lose score when card comes out of foundation
+            if (standardMode) {
+                score-=10;
+            } else {
+                score-=5;
             }
+            return true;
         }
         return false;
     }
 
     public boolean moveToTableau(Card card) {
         for (int i = 0; i < 7; i++) {
-            if (!tableau.get(i).isEmpty()) {
-                // get the last card in the current tableau pile
-                int lastCard = tableau.get(i).get(tableau.get(i).size() - 1).getValue();
-                // get the first card in the current tableau pile so we can compare its colours
-                boolean matchColour = card.getCardColor().equals(tableau.get(i).get(tableau.get(i).size() - 1).getCardColor());
-                // make sure the colours are different and the card being moved to the tableau is in the correct order
-                if (!matchColour && card.getValue() == lastCard - 1) {
-                    tableau.get(i).add(card);
-                    return true;
-                }
-            }
-            // if the card is a king, add it to the empty tableau pile if there is one
-            else if (card.getValue() == 13) {
+            // get the last card in the current tableau pile
+            int lastCard = (!tableau.get(i).isEmpty()) ? tableau.get(i).get(tableau.get(i).size() - 1).getValue() : 0;
+            // get the first card in the current tableau pile so we can compare its colours
+            boolean matchColour = !tableau.get(i).isEmpty() &&
+                    card.getCardColor().equals(tableau.get(i).get(tableau.get(i).size() - 1).getCardColor());
+            // check if the tableau is empty and the current card is a king
+            boolean isKing = tableau.get(i).isEmpty() && card.getValue() == 13;
+            // make sure the colours are different and the card being moved to the tableau is in the correct order
+            if (!matchColour && card.getValue() == lastCard - 1 || isKing) {
                 tableau.get(i).add(card);
                 return true;
             }
@@ -191,26 +172,22 @@ public class Board {
     }
 
     /* if the colors do not match and the card being moved adhere to the logical order of the cards,
-append all selected cards to the tableau */
+    append all selected cards to the tableau */
     public boolean moveWithinTableau(Card selectedCard, int selectedCardIndex, int selectedPileIndex) {
         ArrayList<Card> cardsToMove = getSelectedCards(tableau, selectedCardIndex, selectedPileIndex);
         for (int i = 0; i < 7; i++) {
-            if (!tableau.get(i).isEmpty()) {
-                int lastCard = tableau.get(i).get(tableau.get(i).size() - 1).getValue();
-                boolean colourMatch = selectedCard.getCardColor().equals(tableau.get(i).get(tableau.get(i).size() - 1).getCardColor());
-                if (!colourMatch && selectedCard.getValue() == lastCard-1) {
-                    tableau.get(i).addAll(cardsToMove);
-                    tableau.get(selectedPileIndex).removeAll(cardsToMove);
-                    // 3 points for card moved from one tableau pile to another
-                    if (standardMode) {
-                        score+=3;
-                    }
-                    return true;
-                }
-            }
-            else if (selectedCard.getValue() == 13) {
+            int lastCard = (!tableau.get(i).isEmpty()) ? tableau.get(i).get(tableau.get(i).size() - 1).getValue() : 0;
+            boolean colourMatch = !tableau.get(i).isEmpty() &&
+                    selectedCard.getCardColor().equals(tableau.get(i).get(tableau.get(i).size() - 1).getCardColor());
+            // check if the tableau is empty and the current card is a king
+            boolean isKing = tableau.get(i).isEmpty() && selectedCard.getValue() == 13;
+            if (!colourMatch && selectedCard.getValue() == lastCard-1 || isKing) {
                 tableau.get(i).addAll(cardsToMove);
                 tableau.get(selectedPileIndex).removeAll(cardsToMove);
+                // 3 points for card moved from one tableau pile to another
+                if (standardMode) {
+                    score+=3;
+                }
                 return true;
             }
         }
@@ -230,15 +207,10 @@ append all selected cards to the tableau */
             for (Card card : cards) {
                 if (card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
                     // places card in the foundation
-                    if (cards.indexOf(card) == cards.size()-1 && moveToFoundation(card)) {
+                    boolean moveFoundation = cards.indexOf(card) == cards.size()-1 && moveToFoundation(card);
+                    boolean moveWithinTab = moveWithinTableau(card, cards.indexOf(card), tableau.indexOf(cards));
+                    if (moveFoundation) {
                         cards.remove(card);
-                        // 10 points for moving card to foundation in standard mode
-                        if (standardMode) {
-                            score+=10;
-                        } else {
-                            // 5 points in vegas mode
-                            score+=5;
-                        }
                         if (cards.size() != 0 && !cards.get(cards.size()-1).getFaceUp()) {
                             cards.get(cards.size()-1).setFaceUp(true);
                             // 5 points for every card turned face up
@@ -246,7 +218,7 @@ append all selected cards to the tableau */
                         }
                         return true;
                         // move card within tableau
-                    } else if (moveWithinTableau(card, cards.indexOf(card), tableau.indexOf(cards))) {
+                    } else if (moveWithinTab) {
                         if (cards.size() != 0 && !cards.get(cards.size()-1).getFaceUp()) {
                             cards.get(cards.size()-1).setFaceUp(true);
                             // 5 points for every card turned face up
@@ -262,11 +234,10 @@ append all selected cards to the tableau */
         for (ArrayList<Card> cards : foundation) {
             if (cards.size() > 0) {
                 Card card = cards.get(cards.size()-1);
-                if (card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
-                    if (moveFromFoundationToTableau(card)) {
-                        cards.remove(card);
-                        return true;
-                    }
+                boolean isClicked = card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y);
+                if (isClicked && moveFromFoundationToTableau(card)) {
+                    cards.remove(card);
+                    return true;
                 }
             }
         }
@@ -293,86 +264,6 @@ append all selected cards to the tableau */
             selectedCards.add(tableau.get(selectedPileIndex).get(i));
         }
         return selectedCards;
-    }
-
-    public void drawTime(SpriteBatch batch) {
-        BitmapFont font = new BitmapFont();
-        timer += Gdx.graphics.getDeltaTime();
-        timerString = Float.toString(timer);
-        font.draw(batch, timerString, 650, 450);
-    }
-
-    public void drawScore(SpriteBatch batch) {
-        BitmapFont font = new BitmapFont();
-        font.draw(batch, "Score: " + score, 650, 470);
-    }
-
-    public void drawDeck(SpriteBatch batch) {
-        if (!deck.isEmpty()) {
-            card_back.draw(batch);
-        }
-    }
-
-    public void drawInitTableau(SpriteBatch batch) {
-        int counterX = 240;
-        int counterY = 300;
-        for (int i = 0; i < tableau.size(); i++) {
-            int secondSize;
-            if (initial) {
-                secondSize = tableau.get(i).size();
-            } else {
-                secondSize = i+1;
-            }
-            for (int j = 0; j < secondSize; j++) {
-                // draw each card in the tableau
-                Card card = tableau.get(i).get(j);
-                card.setFaceUp(j == i); // set the last card of each pile face up and draw the card's front image
-                card.draw(batch, counterX, counterY);
-                counterY -= 20;
-            }
-            counterX += 43;
-            counterY = 300;
-            initial = true;
-        }
-    }
-
-    public void drawTableau(SpriteBatch batch) {
-        int counterX = 240;
-        int counterY = 300;
-        for (ArrayList<Card> cards : tableau) {
-            new Placeholder(new Sprite(new Texture("PlaceholderTemplate.png"))).draw(batch, counterX, counterY);
-            for (Card card : cards) {
-                card.draw(batch, counterX, counterY);
-                counterY -= 20;
-            }
-            counterX += 43;
-            counterY = 300;
-        }
-    }
-
-    public void drawWastePile(SpriteBatch batch) {
-        int x = 434;
-        int y = 400;
-        new Placeholder(new Sprite(new Texture("PlaceholderWaste.png"))).draw(batch, x, y);
-        if (!wastePile.isEmpty()) {
-            Card card = wastePile.lastElement();
-            card.draw(batch, x, y);
-        }
-    }
-
-    public void drawFoundation(SpriteBatch batch) {
-        int x = 100;
-        int y = 400;
-
-        // draw the last card in the foundation
-        for (ArrayList<Card> cards : foundation) {
-            new Placeholder(new Sprite(new Texture("PlaceholderAce.png"))).draw(batch, x, y);
-            if (!cards.isEmpty()) {
-                Card card = cards.get(cards.size()-1);
-                card.draw(batch, x, y);
-            }
-            x += 43;
-        }
     }
 
     public void initBoard() {
@@ -421,7 +312,19 @@ append all selected cards to the tableau */
         this.score += score;
     }
 
-    public float getTimer() {
-        return this.timer;
+    public ArrayList<Card> getDeck() {
+        return this.deck;
+    }
+
+    public ArrayList<ArrayList<Card>> getTableau() {
+        return this.tableau;
+    }
+
+    public Stack<Card> getWastePile() {
+        return this.wastePile;
+    }
+
+    public ArrayList<ArrayList<Card>> getFoundation() {
+        return this.foundation;
     }
 }
