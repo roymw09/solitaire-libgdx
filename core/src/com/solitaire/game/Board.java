@@ -120,19 +120,12 @@ public class Board {
 
     public boolean moveToFoundation(Card card) {
         for (int i = 0; i < 4; i++) {
-            if (!foundation.get(i).isEmpty()) {
-                // get the last card in the current foundation pile
-                int lastCard = foundation.get(i).get(foundation.get(i).size()-1).getValue();
-                // get the first card in the current foundation pile so we can compare its suit to the card being moved
-                boolean suitMatches = card.getSuit().equals(foundation.get(i).get(0).getSuit());
-                // make sure the suits match and the card being moved to the foundation is in the correct order
-                if (suitMatches && card.getValue() == lastCard+1) {
-                    foundation.get(i).add(card);
-                    return true;
-                }
-            }
-            // if the card is an ace, add it to the empty foundation pile
-            else if (card.getValue() == 1) {
+            // get the last card in the current foundation pile
+            int lastCard = (!foundation.get(i).isEmpty()) ? foundation.get(i).get(foundation.get(i).size()-1).getValue() : 0;
+            // get the first card in the current foundation pile so we can compare its suit to the card being moved
+            boolean suitMatches = foundation.get(i).isEmpty() || card.getSuit().equals(foundation.get(i).get(0).getSuit());
+            // make sure the suits match and the card being moved to the foundation is in the correct order
+            if (suitMatches && card.getValue() == lastCard+1) {
                 foundation.get(i).add(card);
                 return true;
             }
@@ -141,35 +134,29 @@ public class Board {
     }
 
     public boolean moveFromFoundationToTableau(Card card) {
-        for (ArrayList<Card> cards : foundation) {
-            if (moveToTableau(card)) {
-                // lose score when card comes out of foundation
-                if (standardMode) {
-                    score-=10;
-                } else {
-                    score-=5;
-                }
-                return true;
+        if (moveToTableau(card)) {
+            // lose score when card comes out of foundation
+            if (standardMode) {
+                score-=10;
+            } else {
+                score-=5;
             }
+            return true;
         }
         return false;
     }
 
     public boolean moveToTableau(Card card) {
         for (int i = 0; i < 7; i++) {
-            if (!tableau.get(i).isEmpty()) {
-                // get the last card in the current tableau pile
-                int lastCard = tableau.get(i).get(tableau.get(i).size() - 1).getValue();
-                // get the first card in the current tableau pile so we can compare its colours
-                boolean matchColour = card.getCardColor().equals(tableau.get(i).get(tableau.get(i).size() - 1).getCardColor());
-                // make sure the colours are different and the card being moved to the tableau is in the correct order
-                if (!matchColour && card.getValue() == lastCard - 1) {
-                    tableau.get(i).add(card);
-                    return true;
-                }
-            }
-            // if the card is a king, add it to the empty tableau pile if there is one
-            else if (card.getValue() == 13) {
+            // get the last card in the current tableau pile
+            int lastCard = (!tableau.get(i).isEmpty()) ? tableau.get(i).get(tableau.get(i).size() - 1).getValue() : 0;
+            // get the first card in the current tableau pile so we can compare its colours
+            boolean matchColour = !tableau.get(i).isEmpty() &&
+                    card.getCardColor().equals(tableau.get(i).get(tableau.get(i).size() - 1).getCardColor());
+            // check if the tableau is empty and the current card is a king
+            boolean isKing = tableau.get(i).isEmpty() && card.getValue() == 13;
+            // make sure the colours are different and the card being moved to the tableau is in the correct order
+            if (!matchColour && card.getValue() == lastCard - 1 || isKing) {
                 tableau.get(i).add(card);
                 return true;
             }
@@ -178,26 +165,22 @@ public class Board {
     }
 
     /* if the colors do not match and the card being moved adhere to the logical order of the cards,
-append all selected cards to the tableau */
+    append all selected cards to the tableau */
     public boolean moveWithinTableau(Card selectedCard, int selectedCardIndex, int selectedPileIndex) {
         ArrayList<Card> cardsToMove = getSelectedCards(tableau, selectedCardIndex, selectedPileIndex);
         for (int i = 0; i < 7; i++) {
-            if (!tableau.get(i).isEmpty()) {
-                int lastCard = tableau.get(i).get(tableau.get(i).size() - 1).getValue();
-                boolean colourMatch = selectedCard.getCardColor().equals(tableau.get(i).get(tableau.get(i).size() - 1).getCardColor());
-                if (!colourMatch && selectedCard.getValue() == lastCard-1) {
-                    tableau.get(i).addAll(cardsToMove);
-                    tableau.get(selectedPileIndex).removeAll(cardsToMove);
-                    // 3 points for card moved from one tableau pile to another
-                    if (standardMode) {
-                        score+=3;
-                    }
-                    return true;
-                }
-            }
-            else if (selectedCard.getValue() == 13) {
+            int lastCard = (!tableau.get(i).isEmpty()) ? tableau.get(i).get(tableau.get(i).size() - 1).getValue() : 0;
+            boolean colourMatch = !tableau.get(i).isEmpty() &&
+                    selectedCard.getCardColor().equals(tableau.get(i).get(tableau.get(i).size() - 1).getCardColor());
+            // check if the tableau is empty and the current card is a king
+            boolean isKing = tableau.get(i).isEmpty() && selectedCard.getValue() == 13;
+            if (!colourMatch && selectedCard.getValue() == lastCard-1 || isKing) {
                 tableau.get(i).addAll(cardsToMove);
                 tableau.get(selectedPileIndex).removeAll(cardsToMove);
+                // 3 points for card moved from one tableau pile to another
+                if (standardMode) {
+                    score+=3;
+                }
                 return true;
             }
         }
