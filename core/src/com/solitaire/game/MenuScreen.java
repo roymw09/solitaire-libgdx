@@ -100,7 +100,7 @@ public class MenuScreen implements Screen {
         vegasButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (!drawOne.isChecked() && !drawThree.isChecked()) {
+                if (!drawOne.isChecked() && !drawThree.isChecked() && !timedGame.isChecked()) {
                     cardManager.setPlaying(true);
                     cardManager.setStandardMode(false);
                 }
@@ -164,7 +164,7 @@ public class MenuScreen implements Screen {
         stage.act();
         stage.draw();
         if (cardManager.isPlaying()) {
-            parent.setScreen(new GameScreen(cardManager));
+            parent.setScreen(new GameScreen(parent, cardManager));
         }
     }
 
