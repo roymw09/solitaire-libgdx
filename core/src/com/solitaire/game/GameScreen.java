@@ -31,6 +31,7 @@ public class GameScreen implements Screen {
     private boolean tableauIsInitialized = false;
     private int currentTime;
     private final Stage stage;
+    private float timer;
 
     public GameScreen(Game parent, CardManager cardManager) {
         this.parent = parent;
@@ -43,7 +44,8 @@ public class GameScreen implements Screen {
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.setToOrtho(false, screenWidth, screenHeight);
         camera.update();
-        currentTime = (int) cardManager.getTimer();
+        timer = 0;
+        currentTime = (int) timer;
     }
 
     @Override
@@ -83,32 +85,33 @@ public class GameScreen implements Screen {
         new Placeholder(new Sprite(new Texture("PlaceholderDeck.png"))).draw(batch, 498, 400);
 
         // draw the deck if it still contains cards
-        cardManager.drawDeck(batch);
+        cardManager.drawDeck(batch, cardManager.getDeck());
 
         // draw tableau
         if (tableauIsInitialized) {
-            cardManager.drawTableau(batch);
+            cardManager.drawTableau(batch, cardManager.getTableau());
         } else {
-            cardManager.drawInitTableau(batch);
+            cardManager.drawInitTableau(batch, cardManager.getTableau());
             tableauIsInitialized = true;
         }
 
         // draw wastePile
-        cardManager.drawWastePile(batch);
+        cardManager.drawWastePile(batch, cardManager.getWastePile());
 
         // draw foundation
-        cardManager.drawFoundation(batch);
+        cardManager.drawFoundation(batch, cardManager.getFoundation());
 
         // draw score
-        cardManager.drawScore(batch);
+        cardManager.drawScore(batch, cardManager.getScore());
 
         // draw timer
         if (cardManager.isTimedGame()) {
-            cardManager.drawTime(batch);
+            timer += Gdx.graphics.getDeltaTime();
+            cardManager.drawTime(batch, timer);
         }
 
         // lose 2 points for every 10 seconds elapsed during a timed game
-        int temp = (int) cardManager.getTimer();
+        int temp = (int) timer;
         if (temp % 10 == 0 && temp > currentTime) {
             currentTime = temp;
             cardManager.setScore(-2);

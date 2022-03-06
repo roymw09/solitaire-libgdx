@@ -3,9 +3,7 @@ package com.solitaire.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -18,28 +16,17 @@ public class Board {
     private final ArrayList<ArrayList<Card>> foundation;
     private final Stack<Card> wastePile;
     private int score;
-    private final Sprite card_back;
-    private final Texture cardBackImage = new Texture("card_back.png");
-    private boolean initial = false;
     private boolean standardMode;
     private int passedThroughDeck = 0;
     private boolean drawThree;
     private boolean playing;
     private boolean timedGame;
-    private float timer;
-    private String timerString;
 
     public Board() {
         this.deck = makeCards();
         this.tableau = new ArrayList<>();
         this.foundation = new ArrayList<>();
         this.wastePile = new Stack<>();
-        this.card_back = new Sprite(cardBackImage);
-        this.card_back.setSize(40, 63);
-        this.card_back.setPosition(498, 400);
-        if (timedGame) {
-            this.timer = 0;
-        }
     }
 
     public ArrayList<Card> makeCards() {
@@ -294,86 +281,6 @@ append all selected cards to the tableau */
         return selectedCards;
     }
 
-    public void drawTime(SpriteBatch batch) {
-        BitmapFont font = new BitmapFont();
-        timer += Gdx.graphics.getDeltaTime();
-        timerString = Float.toString(timer);
-        font.draw(batch, timerString, 650, 450);
-    }
-
-    public void drawScore(SpriteBatch batch) {
-        BitmapFont font = new BitmapFont();
-        font.draw(batch, "Score: " + score, 650, 470);
-    }
-
-    public void drawDeck(SpriteBatch batch) {
-        if (!deck.isEmpty()) {
-            card_back.draw(batch);
-        }
-    }
-
-    public void drawInitTableau(SpriteBatch batch) {
-        int counterX = 240;
-        int counterY = 300;
-        for (int i = 0; i < tableau.size(); i++) {
-            int secondSize;
-            if (initial) {
-                secondSize = tableau.get(i).size();
-            } else {
-                secondSize = i+1;
-            }
-            for (int j = 0; j < secondSize; j++) {
-                // draw each card in the tableau
-                Card card = tableau.get(i).get(j);
-                card.setFaceUp(j == i); // set the last card of each pile face up and draw the card's front image
-                card.draw(batch, counterX, counterY);
-                counterY -= 20;
-            }
-            counterX += 43;
-            counterY = 300;
-            initial = true;
-        }
-    }
-
-    public void drawTableau(SpriteBatch batch) {
-        int counterX = 240;
-        int counterY = 300;
-        for (ArrayList<Card> cards : tableau) {
-            new Placeholder(new Sprite(new Texture("PlaceholderTemplate.png"))).draw(batch, counterX, counterY);
-            for (Card card : cards) {
-                card.draw(batch, counterX, counterY);
-                counterY -= 20;
-            }
-            counterX += 43;
-            counterY = 300;
-        }
-    }
-
-    public void drawWastePile(SpriteBatch batch) {
-        int x = 434;
-        int y = 400;
-        new Placeholder(new Sprite(new Texture("PlaceholderWaste.png"))).draw(batch, x, y);
-        if (!wastePile.isEmpty()) {
-            Card card = wastePile.lastElement();
-            card.draw(batch, x, y);
-        }
-    }
-
-    public void drawFoundation(SpriteBatch batch) {
-        int x = 100;
-        int y = 400;
-
-        // draw the last card in the foundation
-        for (ArrayList<Card> cards : foundation) {
-            new Placeholder(new Sprite(new Texture("PlaceholderAce.png"))).draw(batch, x, y);
-            if (!cards.isEmpty()) {
-                Card card = cards.get(cards.size()-1);
-                card.draw(batch, x, y);
-            }
-            x += 43;
-        }
-    }
-
     public void initBoard() {
         initTableau();
         initFoundation();
@@ -420,7 +327,19 @@ append all selected cards to the tableau */
         this.score += score;
     }
 
-    public float getTimer() {
-        return this.timer;
+    public ArrayList<Card> getDeck() {
+        return this.deck;
+    }
+
+    public ArrayList<ArrayList<Card>> getTableau() {
+        return this.tableau;
+    }
+
+    public Stack<Card> getWastePile() {
+        return this.wastePile;
+    }
+
+    public ArrayList<ArrayList<Card>> getFoundation() {
+        return this.foundation;
     }
 }
