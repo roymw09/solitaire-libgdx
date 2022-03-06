@@ -208,7 +208,6 @@ public class Board {
                 if (card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
                     // places card in the foundation
                     boolean moveFoundation = cards.indexOf(card) == cards.size()-1 && moveToFoundation(card);
-                    boolean moveWithinTab = moveWithinTableau(card, cards.indexOf(card), tableau.indexOf(cards));
                     if (moveFoundation) {
                         cards.remove(card);
                         if (cards.size() != 0 && !cards.get(cards.size()-1).getFaceUp()) {
@@ -218,7 +217,7 @@ public class Board {
                         }
                         return true;
                         // move card within tableau
-                    } else if (moveWithinTab) {
+                    } else if (moveWithinTableau(card, cards.indexOf(card), tableau.indexOf(cards))) {
                         if (cards.size() != 0 && !cards.get(cards.size()-1).getFaceUp()) {
                             cards.get(cards.size()-1).setFaceUp(true);
                             // 5 points for every card turned face up
