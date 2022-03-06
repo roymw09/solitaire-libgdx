@@ -262,11 +262,10 @@ append all selected cards to the tableau */
         for (ArrayList<Card> cards : foundation) {
             if (cards.size() > 0) {
                 Card card = cards.get(cards.size()-1);
-                if (card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
-                    if (moveFromFoundationToTableau(card)) {
-                        cards.remove(card);
-                        return true;
-                    }
+                boolean isClicked = card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y);
+                if (isClicked && moveFromFoundationToTableau(card)) {
+                    cards.remove(card);
+                    return true;
                 }
             }
         }
