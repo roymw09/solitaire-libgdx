@@ -106,7 +106,7 @@ public class Board {
         Card card = wastePile.lastElement();
         boolean cardWasClicked = card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y);
         if (cardWasClicked) {
-            if (moveToTableau(card)) {
+            if (moveToTableau(card) || moveToFoundation(card)) {
                 wastePile.remove(card);
                 // 5 points for moving from the wastepile to the tableau
                 if (standardMode) {
@@ -127,6 +127,13 @@ public class Board {
             // make sure the suits match and the card being moved to the foundation is in the correct order
             if (suitMatches && card.getValue() == lastCard+1) {
                 foundation.get(i).add(card);
+                // 10 points for moving card to foundation in standard mode
+                if (standardMode) {
+                    score+=10;
+                } else {
+                    // 5 points in vegas mode
+                    score+=5;
+                }
                 return true;
             }
         }
@@ -200,15 +207,10 @@ public class Board {
             for (Card card : cards) {
                 if (card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
                     // places card in the foundation
-                    if (cards.indexOf(card) == cards.size()-1 && moveToFoundation(card)) {
+                    boolean moveFoundation = cards.indexOf(card) == cards.size()-1 && moveToFoundation(card);
+                    boolean moveWithinTab = moveWithinTableau(card, cards.indexOf(card), tableau.indexOf(cards));
+                    if (moveFoundation) {
                         cards.remove(card);
-                        // 10 points for moving card to foundation in standard mode
-                        if (standardMode) {
-                            score+=10;
-                        } else {
-                            // 5 points in vegas mode
-                            score+=5;
-                        }
                         if (cards.size() != 0 && !cards.get(cards.size()-1).getFaceUp()) {
                             cards.get(cards.size()-1).setFaceUp(true);
                             // 5 points for every card turned face up
@@ -216,7 +218,7 @@ public class Board {
                         }
                         return true;
                         // move card within tableau
-                    } else if (moveWithinTableau(card, cards.indexOf(card), tableau.indexOf(cards))) {
+                    } else if (moveWithinTab) {
                         if (cards.size() != 0 && !cards.get(cards.size()-1).getFaceUp()) {
                             cards.get(cards.size()-1).setFaceUp(true);
                             // 5 points for every card turned face up
