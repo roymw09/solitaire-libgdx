@@ -1,4 +1,4 @@
-package com.solitaire.game;
+package com.solitaire.game.model;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;

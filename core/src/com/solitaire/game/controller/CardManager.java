@@ -1,7 +1,10 @@
-package com.solitaire.game;
+package com.solitaire.game.controller;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.solitaire.game.util.BoardDrawer;
+import com.solitaire.game.model.Board;
+import com.solitaire.game.model.Card;
 
 import java.util.ArrayList;
 import java.util.Stack;
