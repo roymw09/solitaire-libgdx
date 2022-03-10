@@ -1,4 +1,4 @@
-package com.solitaire.game;
+package com.solitaire.game.view;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -18,6 +18,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.solitaire.game.controller.CardManager;
+import com.solitaire.game.util.Placeholder;
 
 public class GameScreen implements Screen {
 
@@ -41,7 +43,7 @@ public class GameScreen implements Screen {
         camera = new OrthographicCamera();
         viewport = new FitViewport(800, 480, camera);
         viewport.apply();
-        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
+        camera.position.set(screenWidth, screenHeight, 0);
         camera.setToOrtho(false, screenWidth, screenHeight);
         camera.update();
         timer = 0;
@@ -57,7 +59,6 @@ public class GameScreen implements Screen {
         ImageButton pauseButton = new ImageButton(textureRegionDrawable);
         pauseButton.setX(735);
         pauseButton.setY(430);
-        pauseButton.setScale(50, 50);
 
         pauseButton.addListener(new ChangeListener() {
             @Override
@@ -118,11 +119,13 @@ public class GameScreen implements Screen {
         }
 
         boolean buttonWasClicked = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
-        if (buttonWasClicked) {
+        boolean screenWasTouched = Gdx.input.justTouched();
+        if (buttonWasClicked || screenWasTouched) {
             cardManager.moveCard(camera);
         }
         stage.draw();
         batch.end();
+        batch.setProjectionMatrix(camera.combined);
     }
 
     @Override

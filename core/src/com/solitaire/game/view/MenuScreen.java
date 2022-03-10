@@ -1,4 +1,4 @@
-package com.solitaire.game;
+package com.solitaire.game.view;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.solitaire.game.controller.CardManager;
 
 public class MenuScreen implements Screen {
 
@@ -166,6 +167,7 @@ public class MenuScreen implements Screen {
         if (cardManager.isPlaying()) {
             parent.setScreen(new GameScreen(parent, cardManager));
         }
+        batch.setProjectionMatrix(camera.combined);
     }
 
     @Override

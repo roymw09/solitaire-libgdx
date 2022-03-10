@@ -1,11 +1,12 @@
-package com.solitaire.game;
+package com.solitaire.game.model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import java.awt.geom.Rectangle2D;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Stack;
@@ -242,8 +243,7 @@ public class Board {
         }
 
         // move card to wastePile when the deck is clicked
-        Rectangle2D bounds = new Rectangle2D.Float(spriteLocationX, spriteLocationY, 40, 63);
-        System.out.println(bounds);
+        Rectangle bounds = new Rectangle(spriteLocationX, spriteLocationY, 40, 63);
         System.out.println(touchPoint.x + ", " + touchPoint.y);
         if (bounds.contains(touchPoint.x, touchPoint.y)) {
             pickCard(deck);
