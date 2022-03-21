@@ -4,29 +4,18 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
-import com.solitaire.game.controller.CardManager;
 
 public class SplashScreen implements Screen {
 
     private final Game parent;
     private final SpriteBatch batch;
+    private final GlyphLayout glyphLayout = new GlyphLayout();
 
     public SplashScreen(Game parent) {
         this.parent = parent;
@@ -49,8 +38,14 @@ public class SplashScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         Texture logo_img = new Texture("Group_11_Studios-logos_white.png");
+        BitmapFont font = new BitmapFont();
+        font.setColor(Color.WHITE);
+        font.getData().setScale(3, 3);
+        String str = "Click To Continue";
+        glyphLayout.setText(font, str);
         batch.begin();
-        batch.draw(logo_img, 450, 150);
+        batch.draw(logo_img, Gdx.graphics.getWidth()/2 - logo_img.getWidth()/2, Gdx.graphics.getHeight()/2 - logo_img.getHeight()/3);
+        font.draw(batch, str, Gdx.graphics.getWidth()/2 - glyphLayout.width/2, Gdx.graphics.getHeight()/2 - glyphLayout.height*10);
         batch.end();
 
 
