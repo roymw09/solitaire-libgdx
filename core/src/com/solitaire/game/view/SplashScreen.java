@@ -41,7 +41,7 @@ public class SplashScreen implements Screen {
         BitmapFont font = new BitmapFont();
         font.setColor(Color.WHITE);
         font.getData().setScale(3, 3);
-        String str = "Click To Continue";
+        String str = "Tap To Continue";
         glyphLayout.setText(font, str);
         batch.begin();
         batch.draw(logo_img, Gdx.graphics.getWidth()/2 - logo_img.getWidth()/2, Gdx.graphics.getHeight()/2 - logo_img.getHeight()/3);
