@@ -18,11 +18,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.solitaire.game.button.RulesButton;
 import com.solitaire.game.controller.CardManager;
 import com.solitaire.game.util.Placeholder;
 
 public class GameScreen implements Screen {
 
+    private static boolean GAME_PAUSED = false;
     private final Game parent;
     private final int screenWidth = 800;
     private final int screenHeight = 480;
@@ -34,6 +36,8 @@ public class GameScreen implements Screen {
     private int currentTime;
     private final Stage stage;
     private float timer;
+    private RulesButton rulesButton;
+    private RulesWindow rulesWindow;
 
     public GameScreen(Game parent, CardManager cardManager) {
         this.parent = parent;
@@ -52,6 +56,18 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
+        rulesWindow = new RulesWindow(parent);
+        Texture rulesTexture = new Texture(Gdx.files.internal("rules_button.png"));
+        TextureRegionDrawable rulesRegionDrawable = new TextureRegionDrawable(rulesTexture);
+        rulesButton = new RulesButton(rulesRegionDrawable);
+        rulesButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                rulesWindow.setVisible(true);
+                pause();
+            }
+        });
+
         Texture myTexture = new Texture(Gdx.files.internal("pausebutton.png"));
         TextureRegion textureRegion = new TextureRegion(myTexture);
         TextureRegionDrawable textureRegionDrawable = new TextureRegionDrawable(textureRegion);
@@ -68,6 +84,8 @@ public class GameScreen implements Screen {
         });
 
         stage.addActor(pauseButton);
+        stage.addActor(rulesWindow);
+        stage.addActor(rulesButton);
     }
 
     @Override
@@ -106,9 +124,10 @@ public class GameScreen implements Screen {
         cardManager.drawScore(batch, cardManager.getScore());
 
         // draw timer
+        float deltaTime = GAME_PAUSED ? 0 : Gdx.graphics.getDeltaTime();
         if (cardManager.isTimedGame()) {
-            timer += Gdx.graphics.getDeltaTime();
-            cardManager.drawTime(batch, timer);
+            timer += deltaTime;
+            cardManager.drawTime(batch, Math.round(timer));
         }
 
         // lose 2 points for every 10 seconds elapsed during a timed game
@@ -137,12 +156,12 @@ public class GameScreen implements Screen {
 
     @Override
     public void pause() {
-
+        GAME_PAUSED = true;
     }
 
     @Override
     public void resume() {
-
+        GAME_PAUSED = false;
     }
 
     @Override

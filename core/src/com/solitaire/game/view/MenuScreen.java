@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -16,8 +17,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.solitaire.game.button.RulesButton;
 import com.solitaire.game.controller.CardManager;
 
 public class MenuScreen implements Screen {
@@ -39,6 +42,8 @@ public class MenuScreen implements Screen {
     protected BitmapFont font;
     protected TextButtonStyle textButtonStyle;
     protected CheckBoxStyle checkBoxStyle;
+    private RulesButton rulesButton;
+    private RulesWindow rulesWindow;
 
     public MenuScreen(Game parent) {
         this.parent = parent;
@@ -76,6 +81,17 @@ public class MenuScreen implements Screen {
 
     @Override
     public void show() {
+        rulesWindow = new RulesWindow(parent);
+        Texture rulesTexture = new Texture(Gdx.files.internal("rules_button.png"));
+        TextureRegionDrawable rulesRegionDrawable = new TextureRegionDrawable(rulesTexture);
+        rulesButton = new RulesButton(rulesRegionDrawable);
+        rulesButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                rulesWindow.setVisible(true);
+            }
+        });
+
         final TextButton standardButton = new TextButton("Standard", textButtonStyle);
         final TextButton vegasButton = new TextButton("Vegas", textButtonStyle);
         final CheckBox drawOne = new CheckBox("Draw One", checkBoxStyle);
@@ -151,6 +167,8 @@ public class MenuScreen implements Screen {
         stage.addActor(drawOne);
         stage.addActor(drawThree);
         stage.addActor(timedGame);
+        stage.addActor(rulesWindow);
+        stage.addActor(rulesButton);
     }
 
     @Override
@@ -167,7 +185,6 @@ public class MenuScreen implements Screen {
         if (cardManager.isPlaying()) {
             parent.setScreen(new GameScreen(parent, cardManager));
         }
-        batch.setProjectionMatrix(camera.combined);
     }
 
     @Override
