@@ -1,12 +1,10 @@
 package com.solitaire.game.util;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.solitaire.game.model.Card;
-
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -14,8 +12,7 @@ public class BoardDrawer {
 
     public void drawTime(SpriteBatch batch, float timer) {
         BitmapFont font = new BitmapFont();
-        timer += Gdx.graphics.getDeltaTime();
-        String timerString = Float.toString(timer);
+        String timerString = Integer.toString(Math.round(timer));
         font.draw(batch, timerString, 650, 450);
     }
 
