@@ -1,12 +1,12 @@
 package com.solitaire.game.model;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Stack;
@@ -22,6 +22,7 @@ public class Board {
     private boolean drawThree;
     private boolean playing;
     private boolean timedGame;
+    private Sound dealCardSound = Gdx.audio.newSound(Gdx.files.internal("dealing-card.wav"));
 
     public Board() {
         this.deck = makeCards();
@@ -80,13 +81,13 @@ public class Board {
         }
     }
 
-    public boolean pickCard(ArrayList<Card> deck) {
+    public void pickCard(ArrayList<Card> deck) {
         if (deck.size() > 0) {
+            dealCardSound.play();
             Card card = deck.get(0);
             card.setFaceUp(true);
             deck.remove(card);
             wastePile.push(card);
-            return true;
         } else {
             passedThroughDeck++;
             deck.addAll(wastePile);
@@ -100,7 +101,6 @@ public class Board {
                 score-=100;
             }
         }
-        return false;
     }
 
     private boolean moveFromWastepile(Vector3 touchPoint) {
@@ -258,8 +258,8 @@ public class Board {
         }
 
         // move cards from waste pile to tableau
-        if (!wastePile.isEmpty()) {
-            moveFromWastepile(touchPoint);
+        if (!wastePile.isEmpty() && moveFromWastepile(touchPoint)) {
+            return true;
         }
         return false;
     }
@@ -333,5 +333,9 @@ public class Board {
 
     public ArrayList<ArrayList<Card>> getFoundation() {
         return this.foundation;
+    }
+
+    public void dispose() {
+        dealCardSound.dispose();
     }
 }
