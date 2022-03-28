@@ -4,6 +4,8 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -32,19 +34,24 @@ public class GameScreen implements Screen {
     private final SpriteBatch batch;
     private final Viewport viewport;
     private final OrthographicCamera camera;
-    private boolean tableauIsInitialized = false;
+    private boolean tableauIsInitialized;
     private int currentTime;
     private final Stage stage;
     private float timer;
-    private RulesButton rulesButton;
     private RulesWindow rulesWindow;
     private final Placeholder placeholder = new Placeholder(new Sprite(new Texture("PlaceholderDeck.png")));
     private final Texture pauseButtonTexture = new Texture(Gdx.files.internal("pausebutton.png"));
     private final Texture rulesTexture = new Texture(Gdx.files.internal("rules_button.png"));
+    // initGameSound does not work unless type is Music, not sure why
+    private final Music initGameSound = Gdx.audio.newMusic(Gdx.files.internal("init-game.wav"));
+    private final Sound moveCardSound = Gdx.audio.newSound(Gdx.files.internal("card-move.wav"));
+    private final Sound dealCardSound = Gdx.audio.newSound(Gdx.files.internal("dealing-card.wav"));
 
     public GameScreen(Game parent, CardManager cardManager) {
+
         this.parent = parent;
         this.cardManager = cardManager;
+        tableauIsInitialized = false;
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
         viewport = new FitViewport(800, 480, camera);
@@ -61,7 +68,7 @@ public class GameScreen implements Screen {
     public void show() {
         rulesWindow = new RulesWindow(parent, stage);
         TextureRegionDrawable rulesRegionDrawable = new TextureRegionDrawable(rulesTexture);
-        rulesButton = new RulesButton(rulesRegionDrawable);
+        RulesButton rulesButton = new RulesButton(rulesRegionDrawable);
         rulesButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -85,6 +92,7 @@ public class GameScreen implements Screen {
         stage.addActor(pauseButton);
         stage.addActor(rulesWindow);
         stage.addActor(rulesButton);
+        stage.addActor(pauseButton);
     }
 
     @Override
@@ -111,6 +119,7 @@ public class GameScreen implements Screen {
         } else {
             cardManager.drawInitTableau(batch, cardManager.getTableau());
             tableauIsInitialized = true;
+            initGameSound.play();
         }
 
         // draw wastePile
@@ -139,7 +148,11 @@ public class GameScreen implements Screen {
         boolean buttonWasClicked = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
         boolean screenWasTouched = Gdx.input.justTouched();
         if (buttonWasClicked || screenWasTouched) {
-            cardManager.moveCard(camera);
+            if (cardManager.movedFromFoundationToTableau() || cardManager.movedToTableau() || cardManager.movedFromWastePile()) {
+                moveCardSound.play();
+            } else if (cardManager.movedToWastePile()) {
+                dealCardSound.play();
+            }
         }
         batch.end();
         stage.draw();
@@ -175,5 +188,8 @@ public class GameScreen implements Screen {
         pauseButtonTexture.dispose();
         rulesTexture.dispose();
         cardManager.dispose();
+        moveCardSound.dispose();
+        dealCardSound.dispose();
+        initGameSound.dispose();
     }
 }

@@ -1,12 +1,12 @@
 package com.solitaire.game.model;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Stack;
@@ -22,12 +22,16 @@ public class Board {
     private boolean drawThree;
     private boolean playing;
     private boolean timedGame;
+    private OrthographicCamera camera;
+    private Vector3 touchPoint = new Vector3();
+    private final Sound shuffleCardSound = Gdx.audio.newSound(Gdx.files.internal("shuffle-cards.wav"));
 
-    public Board() {
+    public Board(OrthographicCamera camera) {
         this.deck = makeCards();
         this.tableau = new ArrayList<>();
         this.foundation = new ArrayList<>();
         this.wastePile = new Stack<>();
+        this.camera = camera;
     }
 
     public ArrayList<Card> makeCards() {
@@ -80,14 +84,20 @@ public class Board {
         }
     }
 
-    public boolean pickCard(ArrayList<Card> deck) {
-        if (deck.size() > 0) {
+    public void pickCard(ArrayList<Card> deck) {
+        // move card to wastePile when the deck is clicked
+        int spriteLocationX = 498;
+        int spriteLocationY = 400;
+        Rectangle bounds = new Rectangle(spriteLocationX, spriteLocationY, 40, 63);
+        touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+        camera.unproject(touchPoint);
+        if (deck.size() > 0 && bounds.contains(touchPoint.x, touchPoint.y)) {
             Card card = deck.get(0);
             card.setFaceUp(true);
             deck.remove(card);
             wastePile.push(card);
-            return true;
         } else {
+            shuffleCardSound.play();
             passedThroughDeck++;
             deck.addAll(wastePile);
             wastePile.clear();
@@ -100,14 +110,79 @@ public class Board {
                 score-=100;
             }
         }
+    }
+
+    public boolean movedToTableau() {
+        // Changed it to unproject to get accurate hit boxes on the cards
+        touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+        camera.unproject(touchPoint);
+        for (ArrayList<Card> cards: tableau) {
+            for (Card card : cards) {
+                if (card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
+                    // places card in the foundation
+                    boolean moveFoundation = cards.indexOf(card) == cards.size()-1 && moveToFoundation(card);
+                    if (moveFoundation) {
+                        cards.remove(card);
+                        if (cards.size() != 0 && !cards.get(cards.size()-1).getFaceUp()) {
+                            cards.get(cards.size()-1).setFaceUp(true);
+                            // 5 points for every card turned face up
+                            if (standardMode) score+=5;
+                        }
+                        return true;
+                        // move card within tableau
+                    } else if (moveWithinTableau(card, cards.indexOf(card), tableau.indexOf(cards))) {
+                        if (cards.size() != 0 && !cards.get(cards.size()-1).getFaceUp()) {
+                            cards.get(cards.size()-1).setFaceUp(true);
+                            // 5 points for every card turned face up
+                            if (standardMode) score+=5;
+                        }
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
     }
 
-    private boolean moveFromWastepile(Vector3 touchPoint) {
-        Card card = wastePile.lastElement();
-        boolean cardWasClicked = card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y);
-        if (cardWasClicked) {
-            if (moveToFoundation(card)){
+    public boolean movedToWastePile() {
+        // move card to wastePile when the deck is clicked
+        int spriteLocationX = 498;
+        int spriteLocationY = 400;
+        touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+        camera.unproject(touchPoint);
+        Rectangle bounds = new Rectangle(spriteLocationX, spriteLocationY, 40, 63);
+        System.out.println(touchPoint.x + ", " + touchPoint.y);
+        if (bounds.contains(touchPoint.x, touchPoint.y)) {
+            pickCard(deck);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean movedFromFoundationToTableau() {
+        // Changed it to unproject to get accurate hit boxes on the cards
+        touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+        camera.unproject(touchPoint);
+        for (ArrayList<Card> cards : foundation) {
+            if (cards.size() > 0) {
+                Card card = cards.get(cards.size()-1);
+                boolean isClicked = card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y);
+                if (isClicked && moveFromFoundationToTableau(card)) {
+                    cards.remove(card);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean movedFromWastePile() {
+        touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+        camera.unproject(touchPoint);
+        if (!wastePile.isEmpty()) {
+            Card card = wastePile.lastElement();
+            boolean cardWasClicked = card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y);
+            if (cardWasClicked && moveToFoundation(card)){
                 wastePile.remove(card);
                 // 5 points for moving from the wastepile to the foundation
                 if (standardMode) {
@@ -115,7 +190,7 @@ public class Board {
                 }
                 return true;
             }
-            else if (moveToTableau(card)) {
+            else if (cardWasClicked && moveToTableau(card)) {
                 wastePile.remove(card);
                 // 5 points for moving from the wastepile to the tableau
                 if (standardMode) {
@@ -203,67 +278,6 @@ public class Board {
         return false;
     }
 
-    public boolean moveCard(OrthographicCamera camera) {
-        int spriteLocationX = 498;
-        int spriteLocationY = 400;
-
-        // Changed it to unproject to get accurate hit boxes on the cards
-        Vector3 touchPoint = new Vector3();
-        touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-        camera.unproject(touchPoint);
-
-        for (ArrayList<Card> cards: tableau) {
-            for (Card card : cards) {
-                if (card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y)) {
-                    // places card in the foundation
-                    boolean moveFoundation = cards.indexOf(card) == cards.size()-1 && moveToFoundation(card);
-                    if (moveFoundation) {
-                        cards.remove(card);
-                        if (cards.size() != 0 && !cards.get(cards.size()-1).getFaceUp()) {
-                            cards.get(cards.size()-1).setFaceUp(true);
-                            // 5 points for every card turned face up
-                            if (standardMode) score+=5;
-                        }
-                        return true;
-                        // move card within tableau
-                    } else if (moveWithinTableau(card, cards.indexOf(card), tableau.indexOf(cards))) {
-                        if (cards.size() != 0 && !cards.get(cards.size()-1).getFaceUp()) {
-                            cards.get(cards.size()-1).setFaceUp(true);
-                            // 5 points for every card turned face up
-                            if (standardMode) score+=5;
-                        }
-                        return true;
-                    }
-                }
-            }
-        }
-
-        // move top card from foundation to tableau
-        for (ArrayList<Card> cards : foundation) {
-            if (cards.size() > 0) {
-                Card card = cards.get(cards.size()-1);
-                boolean isClicked = card.getFrontImage().getBoundingRectangle().contains(touchPoint.x, touchPoint.y);
-                if (isClicked && moveFromFoundationToTableau(card)) {
-                    cards.remove(card);
-                    return true;
-                }
-            }
-        }
-
-        // move card to wastePile when the deck is clicked
-        Rectangle bounds = new Rectangle(spriteLocationX, spriteLocationY, 40, 63);
-        System.out.println(touchPoint.x + ", " + touchPoint.y);
-        if (bounds.contains(touchPoint.x, touchPoint.y)) {
-            pickCard(deck);
-        }
-
-        // move cards from waste pile to tableau
-        if (!wastePile.isEmpty()) {
-            moveFromWastepile(touchPoint);
-        }
-        return false;
-    }
-
     // get all cards stacked on top of the card that was clicked
     public ArrayList<Card> getSelectedCards(ArrayList<ArrayList<Card>> tableau, int selectedCardIndex, int selectedPileIndex) {
         ArrayList<Card> selectedCards = new ArrayList<>();
@@ -333,5 +347,9 @@ public class Board {
 
     public ArrayList<ArrayList<Card>> getFoundation() {
         return this.foundation;
+    }
+
+    public void dispose() {
+        shuffleCardSound.dispose();
     }
 }

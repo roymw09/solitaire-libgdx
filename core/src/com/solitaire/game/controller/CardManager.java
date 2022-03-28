@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.solitaire.game.util.BoardDrawer;
 import com.solitaire.game.model.Board;
 import com.solitaire.game.model.Card;
-
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -13,10 +12,26 @@ public class CardManager {
     private final Board board;
     private final BoardDrawer boardDrawer;
 
-    public CardManager() {
-        board = new Board();
+    public CardManager(OrthographicCamera camera) {
+        board = new Board(camera);
         board.initBoard();
         boardDrawer = new BoardDrawer();
+    }
+
+    public boolean movedToWastePile() {
+        return board.movedToWastePile();
+    }
+
+    public boolean movedToTableau() {
+        return board.movedToTableau();
+    }
+
+    public boolean movedFromWastePile() {
+        return board.movedFromWastePile();
+    }
+
+    public boolean movedFromFoundationToTableau() {
+        return board.movedFromFoundationToTableau();
     }
 
     public void drawDeck(SpriteBatch batch, ArrayList<Card> deck) { boardDrawer.drawDeck(batch, deck); }
@@ -39,10 +54,6 @@ public class CardManager {
 
     public void drawFoundation(SpriteBatch batch, ArrayList<ArrayList<Card>> foundation) {
         boardDrawer.drawFoundation(batch, foundation);
-    }
-
-    public void moveCard(OrthographicCamera camera) {
-        board.moveCard(camera);
     }
 
     public void setStandardMode(boolean mode) {
@@ -81,5 +92,6 @@ public class CardManager {
 
     public void dispose() {
         boardDrawer.dispose();
+        board.dispose();
     }
 }

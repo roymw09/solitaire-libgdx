@@ -49,7 +49,6 @@ public class MenuScreen implements Screen {
 
     public MenuScreen(Game parent) {
         this.parent = parent;
-        cardManager = new CardManager();
 
         font = new BitmapFont();
 
@@ -79,6 +78,8 @@ public class MenuScreen implements Screen {
         camera.update();
 
         stage = new Stage(viewport, batch);
+
+        cardManager = new CardManager(camera);
     }
 
     @Override
