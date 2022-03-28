@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.solitaire.game.button.ReviewButton;
 import com.solitaire.game.button.RulesButton;
 import com.solitaire.game.controller.CardManager;
 
@@ -43,6 +44,7 @@ public class MenuScreen implements Screen {
     protected TextButtonStyle textButtonStyle;
     protected CheckBoxStyle checkBoxStyle;
     private RulesButton rulesButton;
+    private ReviewButton reviewButton;
     private RulesWindow rulesWindow;
 
     public MenuScreen(Game parent) {
@@ -92,6 +94,17 @@ public class MenuScreen implements Screen {
                 rulesWindow.setVisible(true);
             }
         });
+
+        Texture reviewTexture = new Texture(Gdx.files.internal("review_button.png"));
+        TextureRegionDrawable reviewRegionDrawable = new TextureRegionDrawable(reviewTexture);
+        reviewButton = new ReviewButton(reviewRegionDrawable);
+        reviewButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                parent.setScreen(new ReviewScreen(parent));
+            }
+        });
+
 
         final TextButton standardButton = new TextButton("Standard", textButtonStyle);
         final TextButton vegasButton = new TextButton("Vegas", textButtonStyle);
@@ -170,6 +183,7 @@ public class MenuScreen implements Screen {
         stage.addActor(timedGame);
         stage.addActor(rulesWindow);
         stage.addActor(rulesButton);
+        stage.addActor(reviewButton);
     }
 
     @Override
