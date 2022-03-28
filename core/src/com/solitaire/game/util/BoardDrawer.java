@@ -10,6 +10,10 @@ import java.util.Stack;
 
 public class BoardDrawer {
 
+    private static final Placeholder placeholderTemplate = new Placeholder(new Sprite(new Texture("PlaceholderTemplate.png")));
+    private static final Placeholder placeholderWaste = new Placeholder(new Sprite(new Texture("PlaceholderWaste.png")));
+    private static final Placeholder placeholderAce = new Placeholder(new Sprite(new Texture("PlaceholderAce.png")));
+
     public void drawTime(SpriteBatch batch, float timer) {
         BitmapFont font = new BitmapFont();
         String timerString = Integer.toString(Math.round(timer));
@@ -59,7 +63,7 @@ public class BoardDrawer {
         int counterX = 240;
         int counterY = 300;
         for (ArrayList<Card> cards : tableau) {
-            new Placeholder(new Sprite(new Texture("PlaceholderTemplate.png"))).draw(batch, counterX, counterY);
+            placeholderTemplate.draw(batch, counterX, counterY);
             for (Card card : cards) {
                 card.draw(batch, counterX, counterY);
                 counterY -= 20;
@@ -72,7 +76,7 @@ public class BoardDrawer {
     public void drawWastePile(SpriteBatch batch, Stack<Card> wastePile) {
         int x = 434;
         int y = 400;
-        new Placeholder(new Sprite(new Texture("PlaceholderWaste.png"))).draw(batch, x, y);
+        placeholderWaste.draw(batch, x, y);
         if (!wastePile.isEmpty()) {
             Card card = wastePile.lastElement();
             card.draw(batch, x, y);
@@ -82,10 +86,9 @@ public class BoardDrawer {
     public void drawFoundation(SpriteBatch batch, ArrayList<ArrayList<Card>> foundation) {
         int x = 100;
         int y = 400;
-
         // draw the last card in the foundation
         for (ArrayList<Card> cards : foundation) {
-            new Placeholder(new Sprite(new Texture("PlaceholderAce.png"))).draw(batch, x, y);
+            placeholderAce.draw(batch, x, y);
             if (!cards.isEmpty()) {
                 Card card = cards.get(cards.size()-1);
                 card.draw(batch, x, y);
