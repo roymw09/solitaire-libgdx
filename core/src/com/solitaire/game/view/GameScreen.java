@@ -38,16 +38,19 @@ public class GameScreen implements Screen {
     private float timer;
     private RulesButton rulesButton;
     private RulesWindow rulesWindow;
+    private final Placeholder placeholder = new Placeholder(new Sprite(new Texture("PlaceholderDeck.png")));
+    private final Texture pauseButtonTexture = new Texture(Gdx.files.internal("pausebutton.png"));
+    private final Texture rulesTexture = new Texture(Gdx.files.internal("rules_button.png"));
 
     public GameScreen(Game parent, CardManager cardManager) {
         this.parent = parent;
         this.cardManager = cardManager;
-        stage = new Stage();
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
         viewport = new FitViewport(800, 480, camera);
         viewport.apply();
-        camera.position.set(screenWidth, screenHeight, 0);
+        stage = new Stage(viewport, batch);
+        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.setToOrtho(false, screenWidth, screenHeight);
         camera.update();
         timer = 0;
@@ -56,8 +59,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        rulesWindow = new RulesWindow(parent);
-        Texture rulesTexture = new Texture(Gdx.files.internal("rules_button.png"));
+        rulesWindow = new RulesWindow(parent, stage);
         TextureRegionDrawable rulesRegionDrawable = new TextureRegionDrawable(rulesTexture);
         rulesButton = new RulesButton(rulesRegionDrawable);
         rulesButton.addListener(new ChangeListener() {
@@ -67,10 +69,8 @@ public class GameScreen implements Screen {
                 pause();
             }
         });
-
-        Texture myTexture = new Texture(Gdx.files.internal("pausebutton.png"));
-        TextureRegion textureRegion = new TextureRegion(myTexture);
-        TextureRegionDrawable textureRegionDrawable = new TextureRegionDrawable(textureRegion);
+        TextureRegion pauseButtonTextureRegion = new TextureRegion(pauseButtonTexture);
+        TextureRegionDrawable textureRegionDrawable = new TextureRegionDrawable(pauseButtonTextureRegion);
 
         ImageButton pauseButton = new ImageButton(textureRegionDrawable);
         pauseButton.setX(735);
@@ -82,7 +82,6 @@ public class GameScreen implements Screen {
                 parent.setScreen(new PauseScreen(parent));
             }
         });
-
         stage.addActor(pauseButton);
         stage.addActor(rulesWindow);
         stage.addActor(rulesButton);
@@ -101,7 +100,7 @@ public class GameScreen implements Screen {
         Gdx.gl.glClearColor(r,g,b,a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        new Placeholder(new Sprite(new Texture("PlaceholderDeck.png"))).draw(batch, 498, 400);
+        placeholder.draw(batch, 498, 400);
 
         // draw the deck if it still contains cards
         cardManager.drawDeck(batch, cardManager.getDeck());
@@ -142,8 +141,8 @@ public class GameScreen implements Screen {
         if (buttonWasClicked || screenWasTouched) {
             cardManager.moveCard(camera);
         }
-        stage.draw();
         batch.end();
+        stage.draw();
         batch.setProjectionMatrix(camera.combined);
     }
 
@@ -172,5 +171,9 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
         batch.dispose();
+        stage.dispose();
+        pauseButtonTexture.dispose();
+        rulesTexture.dispose();
+        cardManager.dispose();
     }
 }

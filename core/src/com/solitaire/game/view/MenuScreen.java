@@ -81,7 +81,7 @@ public class MenuScreen implements Screen {
 
     @Override
     public void show() {
-        rulesWindow = new RulesWindow(parent);
+        rulesWindow = new RulesWindow(parent, stage);
         Texture rulesTexture = new Texture(Gdx.files.internal("rules_button.png"));
         TextureRegionDrawable rulesRegionDrawable = new TextureRegionDrawable(rulesTexture);
         rulesButton = new RulesButton(rulesRegionDrawable);

@@ -16,6 +16,8 @@ public class SplashScreen implements Screen {
     private final Game parent;
     private final SpriteBatch batch;
     private final GlyphLayout glyphLayout = new GlyphLayout();
+    private final Texture logo_img = new Texture("Group_11_Studios-logos_white.png");
+    private final BitmapFont font = new BitmapFont();
 
     public SplashScreen(Game parent) {
         this.parent = parent;
@@ -37,8 +39,6 @@ public class SplashScreen implements Screen {
         Gdx.gl.glClearColor(r,g,b,a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        Texture logo_img = new Texture("Group_11_Studios-logos_white.png");
-        BitmapFont font = new BitmapFont();
         font.setColor(Color.WHITE);
         font.getData().setScale(3, 3);
         String str = "Tap To Continue";
@@ -47,7 +47,6 @@ public class SplashScreen implements Screen {
         batch.draw(logo_img, Gdx.graphics.getWidth()/2 - logo_img.getWidth()/2, Gdx.graphics.getHeight()/2 - logo_img.getHeight()/3);
         font.draw(batch, str, Gdx.graphics.getWidth()/2 - glyphLayout.width/2, Gdx.graphics.getHeight()/2 - glyphLayout.height*10);
         batch.end();
-
 
         boolean buttonWasClicked = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
         boolean screenWasTouched = Gdx.input.justTouched();
@@ -78,6 +77,8 @@ public class SplashScreen implements Screen {
 
     @Override
     public void dispose() {
-    batch.dispose();
+        batch.dispose();
+        logo_img.dispose();
+        font.dispose();
     }
 }

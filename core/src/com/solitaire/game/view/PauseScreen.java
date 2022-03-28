@@ -113,6 +113,10 @@ public class PauseScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        batch.dispose();
+        stage.dispose();
+        textTextureAtlas.dispose();
+        buttonSkin.dispose();
+        font.dispose();
     }
 }
