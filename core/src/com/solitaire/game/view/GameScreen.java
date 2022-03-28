@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -41,6 +42,7 @@ public class GameScreen implements Screen {
     private final Placeholder placeholder = new Placeholder(new Sprite(new Texture("PlaceholderDeck.png")));
     private final Texture pauseButtonTexture = new Texture(Gdx.files.internal("pausebutton.png"));
     private final Texture rulesTexture = new Texture(Gdx.files.internal("rules_button.png"));
+    private final Sound moveCardSound = Gdx.audio.newSound(Gdx.files.internal("card-move.wav"));
 
     public GameScreen(Game parent, CardManager cardManager) {
         this.parent = parent;
@@ -139,7 +141,9 @@ public class GameScreen implements Screen {
         boolean buttonWasClicked = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
         boolean screenWasTouched = Gdx.input.justTouched();
         if (buttonWasClicked || screenWasTouched) {
-            cardManager.moveCard(camera);
+            if (cardManager.moveCard(camera)) {
+                moveCardSound.play();
+            }
         }
         batch.end();
         stage.draw();
@@ -175,5 +179,6 @@ public class GameScreen implements Screen {
         pauseButtonTexture.dispose();
         rulesTexture.dispose();
         cardManager.dispose();
+        moveCardSound.dispose();
     }
 }
