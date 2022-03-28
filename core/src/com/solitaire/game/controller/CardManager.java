@@ -15,7 +15,7 @@ public class CardManager {
     public CardManager(OrthographicCamera camera) {
         board = new Board(camera);
         board.initBoard();
-        boardDrawer = new BoardDrawer();
+        boardDrawer = new BoardDrawer(camera);
     }
 
     public boolean movedToWastePile() {
