@@ -56,10 +56,6 @@ public class CardManager {
         boardDrawer.drawFoundation(batch, foundation);
     }
 
-    /*public boolean moveCard(OrthographicCamera camera) {
-        return board.moveCard(camera);
-    }*/
-
     public void setStandardMode(boolean mode) {
         board.setStandardMode(mode);
     }

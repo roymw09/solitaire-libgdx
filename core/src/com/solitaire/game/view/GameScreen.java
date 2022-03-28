@@ -43,7 +43,8 @@ public class GameScreen implements Screen {
     private final Texture pauseButtonTexture = new Texture(Gdx.files.internal("pausebutton.png"));
     private final Texture rulesTexture = new Texture(Gdx.files.internal("rules_button.png"));
     private final Sound moveCardSound = Gdx.audio.newSound(Gdx.files.internal("card-move.wav"));
-    private Sound dealCardSound = Gdx.audio.newSound(Gdx.files.internal("dealing-card.wav"));
+    private final Sound dealCardSound = Gdx.audio.newSound(Gdx.files.internal("dealing-card.wav"));
+    private final Sound initGameSound = Gdx.audio.newSound(Gdx.files.internal("init-game.wav"));
 
     public GameScreen(Game parent, CardManager cardManager) {
         this.parent = parent;
@@ -58,6 +59,7 @@ public class GameScreen implements Screen {
         camera.update();
         timer = 0;
         currentTime = (int) timer;
+        initGameSound.play(); // TODO - only working on desktop for some reason so this needs to be looked in to
     }
 
     @Override

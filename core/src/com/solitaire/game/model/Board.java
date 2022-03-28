@@ -22,9 +22,9 @@ public class Board {
     private boolean drawThree;
     private boolean playing;
     private boolean timedGame;
-    private Sound dealCardSound = Gdx.audio.newSound(Gdx.files.internal("dealing-card.wav"));
     private OrthographicCamera camera;
     private Vector3 touchPoint = new Vector3();
+    private final Sound shuffleCardSound = Gdx.audio.newSound(Gdx.files.internal("shuffle-cards.wav"));
 
     public Board(OrthographicCamera camera) {
         this.deck = makeCards();
@@ -92,12 +92,12 @@ public class Board {
         touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         camera.unproject(touchPoint);
         if (deck.size() > 0 && bounds.contains(touchPoint.x, touchPoint.y)) {
-            dealCardSound.play();
             Card card = deck.get(0);
             card.setFaceUp(true);
             deck.remove(card);
             wastePile.push(card);
         } else {
+            shuffleCardSound.play();
             passedThroughDeck++;
             deck.addAll(wastePile);
             wastePile.clear();
@@ -350,6 +350,6 @@ public class Board {
     }
 
     public void dispose() {
-        dealCardSound.dispose();
+        shuffleCardSound.dispose();
     }
 }
