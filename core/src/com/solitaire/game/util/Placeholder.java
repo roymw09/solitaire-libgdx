@@ -8,6 +8,7 @@ public class Placeholder {
 
     public Placeholder(Sprite frontImage) {
         this.frontImage = frontImage;
+        this.frontImage.setSize(61, 79);
     }
 
     public void draw(SpriteBatch batch, int x, int y) {

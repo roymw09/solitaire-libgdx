@@ -42,9 +42,10 @@ public class Card {
         if (faceUp) {
             frontImage.setPosition(x, y);
             frontImage.draw(batch);
+            frontImage.setSize(61, 79);
         } else {
             backImage.setPosition(x, y);
-            backImage.setSize(42, 63);
+            backImage.setSize(61, 79);
             backImage.draw(batch);
         }
     }
