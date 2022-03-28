@@ -78,4 +78,8 @@ public class CardManager {
     public ArrayList<ArrayList<Card>> getFoundation() {
         return board.getFoundation();
     }
+
+    public void dispose() {
+        boardDrawer.dispose();
+    }
 }

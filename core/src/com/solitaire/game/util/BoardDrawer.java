@@ -13,20 +13,19 @@ public class BoardDrawer {
     private static final Placeholder placeholderTemplate = new Placeholder(new Sprite(new Texture("PlaceholderTemplate.png")));
     private static final Placeholder placeholderWaste = new Placeholder(new Sprite(new Texture("PlaceholderWaste.png")));
     private static final Placeholder placeholderAce = new Placeholder(new Sprite(new Texture("PlaceholderAce.png")));
+    private static final BitmapFont font = new BitmapFont();
+    private static final Texture cardBackImage = new Texture("card_back.png");
 
     public void drawTime(SpriteBatch batch, float timer) {
-        BitmapFont font = new BitmapFont();
         String timerString = Integer.toString(Math.round(timer));
         font.draw(batch, timerString, 650, 450);
     }
 
     public void drawScore(SpriteBatch batch, int score) {
-        BitmapFont font = new BitmapFont();
         font.draw(batch, "Score: " + score, 650, 470);
     }
 
     public void drawDeck(SpriteBatch batch, ArrayList<Card> deck) {
-        Texture cardBackImage = new Texture("card_back.png");
         Sprite card_back = new Sprite(cardBackImage);
         card_back.setSize(40, 63);
         card_back.setPosition(498, 400);
@@ -95,5 +94,10 @@ public class BoardDrawer {
             }
             x += 43;
         }
+    }
+
+    public void dispose() {
+        font.dispose();
+        cardBackImage.dispose();
     }
 }
