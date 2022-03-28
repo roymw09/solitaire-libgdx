@@ -190,7 +190,7 @@ public class Board {
                 }
                 return true;
             }
-            else if (moveToTableau(card)) {
+            else if (cardWasClicked && moveToTableau(card)) {
                 wastePile.remove(card);
                 // 5 points for moving from the wastepile to the tableau
                 if (standardMode) {
