@@ -43,6 +43,7 @@ public class GameScreen implements Screen {
     private final Texture pauseButtonTexture = new Texture(Gdx.files.internal("pausebutton.png"));
     private final Texture rulesTexture = new Texture(Gdx.files.internal("rules_button.png"));
     private final Sound moveCardSound = Gdx.audio.newSound(Gdx.files.internal("card-move.wav"));
+    private Sound dealCardSound = Gdx.audio.newSound(Gdx.files.internal("dealing-card.wav"));
 
     public GameScreen(Game parent, CardManager cardManager) {
         this.parent = parent;
@@ -141,8 +142,10 @@ public class GameScreen implements Screen {
         boolean buttonWasClicked = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
         boolean screenWasTouched = Gdx.input.justTouched();
         if (buttonWasClicked || screenWasTouched) {
-            if (cardManager.moveCard(camera)) {
+            if (cardManager.movedFromFoundationToTableau() || cardManager.movedToTableau() || cardManager.movedFromWastePile()) {
                 moveCardSound.play();
+            } else if (cardManager.movedToWastePile()) {
+                dealCardSound.play();
             }
         }
         batch.end();

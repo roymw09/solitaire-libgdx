@@ -12,10 +12,26 @@ public class CardManager {
     private final Board board;
     private final BoardDrawer boardDrawer;
 
-    public CardManager() {
-        board = new Board();
+    public CardManager(OrthographicCamera camera) {
+        board = new Board(camera);
         board.initBoard();
         boardDrawer = new BoardDrawer();
+    }
+
+    public boolean movedToWastePile() {
+        return board.movedToWastePile();
+    }
+
+    public boolean movedToTableau() {
+        return board.movedToTableau();
+    }
+
+    public boolean movedFromWastePile() {
+        return board.movedFromWastePile();
+    }
+
+    public boolean movedFromFoundationToTableau() {
+        return board.movedFromFoundationToTableau();
     }
 
     public void drawDeck(SpriteBatch batch, ArrayList<Card> deck) { boardDrawer.drawDeck(batch, deck); }
@@ -40,9 +56,9 @@ public class CardManager {
         boardDrawer.drawFoundation(batch, foundation);
     }
 
-    public boolean moveCard(OrthographicCamera camera) {
+    /*public boolean moveCard(OrthographicCamera camera) {
         return board.moveCard(camera);
-    }
+    }*/
 
     public void setStandardMode(boolean mode) {
         board.setStandardMode(mode);
