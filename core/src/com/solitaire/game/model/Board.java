@@ -85,13 +85,17 @@ public class Board {
     }
 
     public void pickCard(ArrayList<Card> deck) {
-        // move card to wastePile when the deck is clicked
-        int spriteLocationX = 498;
-        int spriteLocationY = 400;
-        Rectangle bounds = new Rectangle(spriteLocationX, spriteLocationY, 40, 63);
+        // Remove score after 1 or 4 passes through deck
+        if (standardMode && deck.isEmpty()) {
+            if (drawThree && passedThroughDeck >= 4) {
+                score-=20;
+            } else if (!drawThree && passedThroughDeck >= 1) {
+                score-=100;
+            }
+        }
         touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         camera.unproject(touchPoint);
-        if (deck.size() > 0 && bounds.contains(touchPoint.x, touchPoint.y)) {
+        if (deck.size() > 0) {
             Card card = deck.get(0);
             card.setFaceUp(true);
             deck.remove(card);
@@ -101,14 +105,6 @@ public class Board {
             passedThroughDeck++;
             deck.addAll(wastePile);
             wastePile.clear();
-        }
-        // Remove score after 1 or 4 passes through deck
-        if (standardMode) {
-            if (drawThree && passedThroughDeck > 4) {
-                score-=20;
-            } else if (!drawThree && passedThroughDeck > 1) {
-                score-=100;
-            }
         }
     }
 
@@ -150,7 +146,7 @@ public class Board {
         int spriteLocationY = 400;
         touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         camera.unproject(touchPoint);
-        Rectangle bounds = new Rectangle(spriteLocationX, spriteLocationY, 40, 63);
+        Rectangle bounds = new Rectangle(spriteLocationX, spriteLocationY, 61, 79);
         System.out.println(touchPoint.x + ", " + touchPoint.y);
         if (bounds.contains(touchPoint.x, touchPoint.y)) {
             pickCard(deck);
