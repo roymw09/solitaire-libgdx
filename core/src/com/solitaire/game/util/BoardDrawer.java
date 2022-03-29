@@ -45,7 +45,7 @@ public class BoardDrawer {
     public void drawInitTableau(SpriteBatch batch, ArrayList<ArrayList<Card>> tableau) {
         boolean initial = false;
         float counterX = camera.viewportWidth/2 - (cardWidth*7)/2;
-        float counterY = camera.viewportHeight/2 - (cardHeight*0.5f)/2;
+        float counterY = camera.viewportHeight/2 - (cardHeight*-1.5f)/2;
         for (int i = 0; i < tableau.size(); i++) {
             int secondSize;
             if (initial) {
@@ -61,14 +61,14 @@ public class BoardDrawer {
                 counterY -= 20;
             }
             counterX += cardWidth;
-            counterY = camera.viewportHeight/2 - (cardHeight*0.5f)/2;
+            counterY = camera.viewportHeight/2 - (cardHeight*-1.5f)/2;
             initial = true;
         }
     }
 
     public void drawTableau(SpriteBatch batch, ArrayList<ArrayList<Card>> tableau) {
         float counterX = camera.viewportWidth/2 - (cardWidth*7)/2;
-        float counterY = camera.viewportHeight/2 - (cardHeight*0.5f)/2;
+        float counterY = camera.viewportHeight/2 - (cardHeight*-1.5f)/2;
         for (ArrayList<Card> cards : tableau) {
             placeholderTemplate.draw(batch, Math.round(counterX), Math.round(counterY));
             for (Card card : cards) {
@@ -76,7 +76,7 @@ public class BoardDrawer {
                 counterY -= 20;
             }
             counterX += cardWidth;
-            counterY = camera.viewportHeight/2 - (cardHeight*0.5f)/2;
+            counterY = camera.viewportHeight/2 - (cardHeight*-1.5f)/2;
         }
     }
 

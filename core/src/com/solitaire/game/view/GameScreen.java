@@ -54,7 +54,7 @@ public class GameScreen implements Screen {
         tableauIsInitialized = false;
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
-        viewport = new FitViewport(800, 480, camera);
+        viewport = new FitViewport(screenWidth, screenHeight, camera);
         viewport.apply();
         stage = new Stage(viewport, batch);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);

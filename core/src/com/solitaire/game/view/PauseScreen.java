@@ -25,8 +25,8 @@ public class PauseScreen implements Screen {
     private final SpriteBatch batch;
     protected TextButton.TextButtonStyle textButtonStyle;
     protected Screen previousScreen;
-    OrthographicCamera camera;
-    FitViewport viewport;
+    private OrthographicCamera camera;
+    private FitViewport viewport;
 
     public PauseScreen(Game parent) {
         this.parent = parent;
@@ -118,5 +118,7 @@ public class PauseScreen implements Screen {
         textTextureAtlas.dispose();
         buttonSkin.dispose();
         font.dispose();
+        previousScreen.dispose();
+        parent.dispose();
     }
 }
