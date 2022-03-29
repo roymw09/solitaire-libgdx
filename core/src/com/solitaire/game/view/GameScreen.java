@@ -44,11 +44,11 @@ public class GameScreen implements Screen {
     private final Texture rulesTexture = new Texture(Gdx.files.internal("rules_button.png"));
     // initGameSound does not work unless type is Music, not sure why
     private final Music initGameSound = Gdx.audio.newMusic(Gdx.files.internal("init-game.wav"));
+    private final Music timerSound = Gdx.audio.newMusic(Gdx.files.internal("timer.wav"));
     private final Sound moveCardSound = Gdx.audio.newSound(Gdx.files.internal("card-move.wav"));
     private final Sound dealCardSound = Gdx.audio.newSound(Gdx.files.internal("dealing-card.wav"));
 
     public GameScreen(Game parent, CardManager cardManager) {
-
         this.parent = parent;
         this.cardManager = cardManager;
         tableauIsInitialized = false;
@@ -73,7 +73,7 @@ public class GameScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 rulesWindow.setVisible(true);
-                pause();
+                timerSound.pause();
             }
         });
         TextureRegion pauseButtonTextureRegion = new TextureRegion(pauseButtonTexture);
@@ -87,12 +87,19 @@ public class GameScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 parent.setScreen(new PauseScreen(parent));
+                timerSound.pause();
             }
         });
+
         stage.addActor(pauseButton);
         stage.addActor(rulesWindow);
         stage.addActor(rulesButton);
         stage.addActor(pauseButton);
+
+        if (cardManager.isTimedGame() && !timerSound.isLooping() && !timerSound.isPlaying()) {
+            timerSound.setLooping(true);
+            timerSound.play();
+        }
     }
 
     @Override
@@ -174,6 +181,9 @@ public class GameScreen implements Screen {
     @Override
     public void resume() {
         GAME_PAUSED = false;
+        if (cardManager.isTimedGame()) {
+            timerSound.play();
+        }
     }
 
     @Override
@@ -191,5 +201,6 @@ public class GameScreen implements Screen {
         moveCardSound.dispose();
         dealCardSound.dispose();
         initGameSound.dispose();
+        timerSound.dispose();
     }
 }

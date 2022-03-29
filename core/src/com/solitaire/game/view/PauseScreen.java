@@ -61,6 +61,7 @@ public class PauseScreen implements Screen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 parent.setScreen(previousScreen);
+                parent.resume();
             }
         });
 
