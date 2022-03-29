@@ -74,6 +74,7 @@ public class GameScreen implements Screen {
             public void changed(ChangeEvent event, Actor actor) {
                 rulesWindow.setVisible(true);
                 timerSound.pause();
+                pause();
             }
         });
         TextureRegion pauseButtonTextureRegion = new TextureRegion(pauseButtonTexture);
