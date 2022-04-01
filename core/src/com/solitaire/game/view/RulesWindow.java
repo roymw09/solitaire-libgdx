@@ -41,13 +41,13 @@ public class RulesWindow extends Window {
                parent.resume();
            }
         });
-        getTitleTable().add(backButton).padRight(20).padTop(100);
+        getTitleTable().add(backButton).padRight(60).padTop(120);
         setClip(false);
         setTransform(true);
-        setSize(450, 392);
+        setSize(750, 450);
         setModal(true);
         //setPosition(Gdx.graphics.getWidth()/2 - getWidth()/2, Gdx.graphics.getHeight()/2 - getHeight()/2);
-        setPosition(stage.getWidth()/2 - getWidth()/2, stage.getHeight()/2 - getHeight()/2);
+        setPosition(stage.getWidth()/2 - getWidth()/2, stage.getHeight()/2 - getHeight()/2-50);
         setVisible(false);
     }
 }
