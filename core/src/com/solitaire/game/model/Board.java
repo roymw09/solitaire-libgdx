@@ -256,17 +256,19 @@ public class Board {
     public boolean moveWithinTableau(Card selectedCard, int selectedCardIndex, int selectedPileIndex) {
         ArrayList<Card> cardsToMove = getSelectedCards(tableau, selectedCardIndex, selectedPileIndex);
         for (int i = 0; i < 7; i++) {
-            int lastCard = (!tableau.get(i).isEmpty()) ? tableau.get(i).get(tableau.get(i).size() - 1).getValue() : 0;
+            int lastCardValue = (!tableau.get(i).isEmpty()) ? tableau.get(i).get(tableau.get(i).size() - 1).getValue() : 0;
             boolean colourMatch = !tableau.get(i).isEmpty() &&
                     selectedCard.getCardColor().equals(tableau.get(i).get(tableau.get(i).size() - 1).getCardColor());
             // check if the tableau is empty and the current card is a king
             boolean isKing = tableau.get(i).isEmpty() && selectedCard.getValue() == 13;
-            if (!colourMatch && selectedCard.getValue() == lastCard-1 || isKing) {
+            if (!colourMatch && selectedCard.getValue() == lastCardValue-1 || isKing) {
                 tableau.get(i).addAll(cardsToMove);
                 tableau.get(selectedPileIndex).removeAll(cardsToMove);
-                // 3 points for card moved from one tableau pile to another
-                if (standardMode) {
+                // 3 points for a card moved from one tableau pile to another
+                Card lastCard = tableau.get(i).get(tableau.get(i).size() - 1);
+                if (standardMode && !isKing && !selectedCard.hasCardBeenStacked(lastCard)) {
                     score+=3;
+                    selectedCard.getCardsIveBeenStackedOn().add(lastCard);
                 }
                 return true;
             }

@@ -3,6 +3,8 @@ package com.solitaire.game.model;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.util.ArrayList;
+
 public class Card {
     private int value;
     private String cardValue;
@@ -11,6 +13,7 @@ public class Card {
     private boolean faceUp;
     private Sprite frontImage;
     private Sprite backImage;
+    private ArrayList<Card> cardsIveBeenStackedOn;
 
     public Card(int value, String suit, Sprite frontImage, Sprite backImage) {
         this.value = value;
@@ -18,6 +21,7 @@ public class Card {
         this.frontImage = frontImage;
         this.backImage = backImage;
         this.faceUp = true;
+        this.cardsIveBeenStackedOn = new ArrayList<>();
 
         if (value == 11) {
             cardValue = "Jack";
@@ -100,5 +104,18 @@ public class Card {
 
     public void setBackImage(Sprite backImage){
         this.backImage = backImage;
+    }
+
+    public ArrayList<Card> getCardsIveBeenStackedOn() {
+        return cardsIveBeenStackedOn;
+    }
+
+    public boolean hasCardBeenStacked(Card card) {
+        for (Card crd : cardsIveBeenStackedOn) {
+            if (crd.value == card.value && crd.suit.equals(card.suit)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
