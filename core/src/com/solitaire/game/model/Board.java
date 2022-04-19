@@ -1,5 +1,6 @@
 package com.solitaire.game.model;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -7,6 +8,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.solitaire.game.view.MenuScreen;
+import com.solitaire.game.view.WinScreen;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Stack;
@@ -23,15 +27,17 @@ public class Board {
     private boolean playing;
     private boolean timedGame;
     private OrthographicCamera camera;
+    private Game parent;
     private Vector3 touchPoint = new Vector3();
     private final Sound shuffleCardSound = Gdx.audio.newSound(Gdx.files.internal("shuffle-cards.wav"));
 
-    public Board(OrthographicCamera camera) {
+    public Board(OrthographicCamera camera, Game parent) {
         this.deck = makeCards();
         this.tableau = new ArrayList<>();
         this.foundation = new ArrayList<>();
         this.wastePile = new Stack<>();
         this.camera = camera;
+        this.parent = parent;
     }
 
     public ArrayList<Card> makeCards() {
@@ -215,8 +221,26 @@ public class Board {
                     // 5 points in vegas mode
                     score+=5;
                 }
+                CheckWin();
                 return true;
             }
+        }
+        return false;
+    }
+
+    public boolean CheckWin(){
+        int kings = 0;
+        for (int i = 0; i < 4; i++){
+            System.out.println("Test ------ " + ((!foundation.get(i).isEmpty()) ? foundation.get(i).get(foundation.get(i).size()-1).getValue() : 0));
+            int lastCard = (!foundation.get(i).isEmpty()) ? foundation.get(i).get(foundation.get(i).size()-1).getValue() : 0;
+            if (lastCard == 13) {
+                kings++;
+            }
+        }
+        if (kings == 4){
+            System.out.println("WIN");
+            parent.setScreen(new WinScreen(parent));
+            return true;
         }
         return false;
     }
