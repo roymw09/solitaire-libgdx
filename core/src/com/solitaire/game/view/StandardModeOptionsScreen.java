@@ -111,7 +111,7 @@ public class StandardModeOptionsScreen implements Screen {
 
         //startGameButton.setX(200);
         //startGameButton.setY(200);
-        startGameButton.setX(Gdx.graphics.getWidth()/2 - startGameButton.getWidth()/2);
+        startGameButton.setX(camera.viewportWidth/2 - startGameButton.getWidth()/2);
         startGameButton.setY(200);
 
         startGameButton.addListener(new ChangeListener() {

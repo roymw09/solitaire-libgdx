@@ -95,10 +95,10 @@ public class MenuScreen implements Screen {
         final TextButton vegasButton = new TextButton("Vegas", textButtonStyle);
 
         standardButton.setX(200);
-        standardButton.setY(Gdx.graphics.getHeight()/2 - standardButton.getHeight()/2);
+        standardButton.setY(camera.viewportHeight/2 - standardButton.getHeight()/2);
 
         vegasButton.setX(400);
-        vegasButton.setY(Gdx.graphics.getHeight()/2 - vegasButton.getHeight()/2);
+        vegasButton.setY(camera.viewportHeight/2 - vegasButton.getHeight()/2);
 
         standardButton.addListener(new ChangeListener() {
             @Override
@@ -137,6 +137,7 @@ public class MenuScreen implements Screen {
         if (cardManager.isPlaying()) {
             parent.setScreen(new GameScreen(parent, cardManager));
         }
+        batch.setProjectionMatrix(camera.combined);
     }
 
     @Override
