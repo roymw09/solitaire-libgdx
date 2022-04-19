@@ -84,9 +84,9 @@ public class Board {
         }
     }
 
-    public void pickCard(ArrayList<Card> deck) {
+    public boolean pickCard(ArrayList<Card> deck) {
         // Remove score after 1 or 4 passes through deck
-        if (standardMode && deck.isEmpty()) {
+        if (standardMode && deck.isEmpty() && !wastePile.isEmpty()) {
             if (drawThree && passedThroughDeck >= 4) {
                 score-=20;
             } else if (!drawThree && passedThroughDeck >= 1) {
@@ -100,12 +100,14 @@ public class Board {
             card.setFaceUp(true);
             deck.remove(card);
             wastePile.push(card);
-        } else {
+            return true;
+        } else if (!wastePile.isEmpty()) {
             shuffleCardSound.play();
             passedThroughDeck++;
             deck.addAll(wastePile);
             wastePile.clear();
         }
+        return false;
     }
 
     public boolean movedToTableau() {
@@ -149,8 +151,7 @@ public class Board {
         Rectangle bounds = new Rectangle(spriteLocationX, spriteLocationY, 61, 79);
         System.out.println(touchPoint.x + ", " + touchPoint.y);
         if (bounds.contains(touchPoint.x, touchPoint.y)) {
-            pickCard(deck);
-            return true;
+            return pickCard(deck);
         }
         return false;
     }
