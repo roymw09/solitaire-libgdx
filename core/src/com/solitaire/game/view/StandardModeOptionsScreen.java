@@ -12,10 +12,8 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox.CheckBoxStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -24,35 +22,50 @@ import com.solitaire.game.button.ReviewButton;
 import com.solitaire.game.button.RulesButton;
 import com.solitaire.game.controller.CardManager;
 
-public class MenuScreen implements Screen {
+public class StandardModeOptionsScreen implements Screen {
 
     private final Game parent;
     private final int screenWidth = 800;
     private final int screenHeight = 480;
-    private final SpriteBatch batch;
     private final Viewport viewport;
     private final OrthographicCamera camera;
+    private final SpriteBatch batch;
     private final CardManager cardManager;
     private final TextureAtlas buttonTextureAtlas;
+    private final TextureAtlas uncheckTextureAtlas;
+    private final TextureAtlas checkedTextureAtlas;
     protected Skin buttonSkin;
+    protected Skin checkedSkin;
+    protected Skin uncheckedSkin;
     protected Stage stage;
     protected BitmapFont font;
-    protected TextButtonStyle textButtonStyle;
+    protected TextButton.TextButtonStyle textButtonStyle;
+    protected CheckBox.CheckBoxStyle checkBoxStyle;
     private RulesButton rulesButton;
     private ReviewButton reviewButton;
     private RulesWindow rulesWindow;
 
-    public MenuScreen(Game parent) {
+    public StandardModeOptionsScreen(Game parent, CardManager cardManager) {
         this.parent = parent;
 
         font = new BitmapFont();
 
-        textButtonStyle = new TextButtonStyle();
+        textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = font;
         buttonTextureAtlas = new TextureAtlas("button.atlas");
         buttonSkin = new Skin(buttonTextureAtlas);
         textButtonStyle.up = buttonSkin.getDrawable("button");
 
+        uncheckTextureAtlas = new TextureAtlas("unchecked.atlas");
+        checkedTextureAtlas = new TextureAtlas("checked.atlas");
+
+        checkedSkin = new Skin(checkedTextureAtlas);
+        uncheckedSkin = new Skin(uncheckTextureAtlas);
+
+        checkBoxStyle = new CheckBox.CheckBoxStyle();
+        checkBoxStyle.font = font;
+        checkBoxStyle.checkboxOn = checkedSkin.getDrawable("checked");
+        checkBoxStyle.checkboxOff = uncheckedSkin.getDrawable("unchecked");
 
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
@@ -64,7 +77,7 @@ public class MenuScreen implements Screen {
 
         stage = new Stage(viewport, batch);
 
-        cardManager = new CardManager(camera);
+        this.cardManager = cardManager;
     }
 
     @Override
@@ -91,33 +104,68 @@ public class MenuScreen implements Screen {
         });
 
 
-        final TextButton standardButton = new TextButton("Standard", textButtonStyle);
-        final TextButton vegasButton = new TextButton("Vegas", textButtonStyle);
+        final TextButton startGameButton = new TextButton("Start Game", textButtonStyle);
+        final CheckBox drawOne = new CheckBox("Draw One", checkBoxStyle);
+        final CheckBox drawThree = new CheckBox("Draw Three", checkBoxStyle);
+        final CheckBox timedGame = new CheckBox("Timed Game", checkBoxStyle);
 
-        standardButton.setX(200);
-        standardButton.setY(Gdx.graphics.getHeight()/2 - standardButton.getHeight()/2);
+        //startGameButton.setX(200);
+        //startGameButton.setY(200);
+        startGameButton.setX(Gdx.graphics.getWidth()/2 - startGameButton.getWidth()/2);
+        startGameButton.setY(200);
 
-        vegasButton.setX(400);
-        vegasButton.setY(Gdx.graphics.getHeight()/2 - vegasButton.getHeight()/2);
-
-        standardButton.addListener(new ChangeListener() {
+        startGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                cardManager.setStandardMode(true);
-                parent.setScreen(new StandardModeOptionsScreen(parent, cardManager));
+                if (drawOne.isChecked() || drawThree.isChecked()) {
+                    cardManager.setPlaying(true);
+                }
             }
         });
 
-        vegasButton.addListener(new ChangeListener() {
+
+        drawOne.setX(350);
+        drawOne.setY(175);
+
+        drawThree.setX(350);
+        drawThree.setY(125);
+
+        timedGame.setX(350);
+        timedGame.setY(75);
+
+        drawOne.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                cardManager.setPlaying(true);
-                cardManager.setStandardMode(false);
+                if (drawOne.isChecked() && !drawThree.isChecked()) {
+                    cardManager.setDrawThree(false);
+                } else {
+                    drawOne.setChecked(false);
+                }
             }
         });
 
-        stage.addActor(standardButton);
-        stage.addActor(vegasButton);
+        drawThree.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (drawThree.isChecked() && !drawOne.isChecked()) {
+                    cardManager.setDrawThree(true);
+                } else {
+                    drawThree.setChecked(false);
+                }
+            }
+        });
+
+        timedGame.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                cardManager.setTimedGame(timedGame.isChecked());
+            }
+        });
+
+        stage.addActor(startGameButton);
+        stage.addActor(drawOne);
+        stage.addActor(drawThree);
+        stage.addActor(timedGame);
         stage.addActor(rulesWindow);
         stage.addActor(rulesButton);
         stage.addActor(reviewButton);
@@ -164,6 +212,10 @@ public class MenuScreen implements Screen {
     @Override
     public void dispose() {
         buttonSkin.dispose();
+        checkedSkin.dispose();
+        uncheckedSkin.dispose();
         buttonTextureAtlas.dispose();
+        checkedTextureAtlas.dispose();
+        uncheckTextureAtlas.dispose();
     }
 }
