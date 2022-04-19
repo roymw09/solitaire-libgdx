@@ -107,13 +107,6 @@ public class ReviewScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
         stage.act();
         stage.draw();
-        font.setColor(Color.WHITE);
-        font.getData().setScale(6, 6);
-        String str = "Thank Yougggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg";
-        glyphLayout.setText(font, str);
-        batch.begin();
-        font.draw(batch, str, Gdx.graphics.getWidth()/2 - glyphLayout.width/2, Gdx.graphics.getHeight()/2 - glyphLayout.height/2);
-        batch.end();
     }
 
     @Override
