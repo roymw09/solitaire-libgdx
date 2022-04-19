@@ -1,5 +1,6 @@
 package com.solitaire.game.controller;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.solitaire.game.util.BoardDrawer;
@@ -12,8 +13,8 @@ public class CardManager {
     private final Board board;
     private final BoardDrawer boardDrawer;
 
-    public CardManager(OrthographicCamera camera) {
-        board = new Board(camera);
+    public CardManager(OrthographicCamera camera, Game parent) {
+        board = new Board(camera, parent);
         board.initBoard();
         boardDrawer = new BoardDrawer(camera);
     }

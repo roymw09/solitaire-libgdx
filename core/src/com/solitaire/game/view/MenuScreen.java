@@ -64,7 +64,7 @@ public class MenuScreen implements Screen {
 
         stage = new Stage(viewport, batch);
 
-        cardManager = new CardManager(camera);
+        cardManager = new CardManager(camera, parent);
     }
 
     @Override
