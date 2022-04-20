@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.solitaire.game.view.MenuScreen;
 import com.solitaire.game.view.WinScreen;
 
 import java.util.ArrayList;
@@ -101,13 +100,30 @@ public class Board {
         }
         touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         camera.unproject(touchPoint);
+
+        if (drawThree) {
+            FlipCard(false);
+            FlipCard(false);
+            if (FlipCard(true)) {
+                return true;
+            }
+        } else {
+            if (FlipCard(true)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean FlipCard(boolean last){
         if (deck.size() > 0) {
             Card card = deck.get(0);
             card.setFaceUp(true);
             deck.remove(card);
             wastePile.push(card);
             return true;
-        } else if (!wastePile.isEmpty()) {
+        } else if (!wastePile.isEmpty() && last) {
             shuffleCardSound.play();
             passedThroughDeck++;
             deck.addAll(wastePile);
